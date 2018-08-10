@@ -20,7 +20,7 @@
             android:id="@id/btn_bluetooth_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="PEP 검색" />
+            android:text="위 블루투스 기기중 PEP 선택" />
 
     </LinearLayout>
 

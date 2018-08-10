@@ -20,8 +20,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".presentation.PEPListActivity" ></activity>
-        <activity android:name=".presentation.PolicyEditorActivity"></activity>
+        <activity android:name=".presentation.PEPListActivity" />
+        <activity android:name=".presentation.PolicyEditorActivity" />
+        <activity android:name=".presentation.DeviceListActivity"></activity>
     </application>
 
 </manifest>

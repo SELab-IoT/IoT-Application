@@ -1,97 +1,87 @@
 package kr.ac.hanyang.selab.iot_application.controller;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Message;
-import android.widget.Toast;
+import android.util.Log;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import kr.ac.hanyang.selab.iot_application.presentation.PEPListActivity;
 import kr.ac.hanyang.selab.iot_application.presentation.PEPListAdapter;
 import kr.ac.hanyang.selab.iot_application.utill.BluetoothService;
 
 public class PEPListController {
+
+    private final String TAG = "PEPListController";
     private BluetoothService bluetooth = null;
+
+    private Handler blueHandler;
+
+    private Set<BluetoothDevice> pepList = new HashSet<>();
 
     //여기 커플링 정말 싫다... 나중에 정말 시간 남으면 리팩토링 시도
     private PEPListActivity activity;
-    private PEPListAdapter adapter;
+    private PEPListAdapter listAdapter;
 
     public PEPListController(PEPListActivity activity, PEPListAdapter adapter){
         this.activity = activity;
-        this.adapter = adapter;
-    }
-
-    public void searchPEP(){
-
-        final Handler handle = new Handler(){
-            @Override
+        this.listAdapter = adapter;
+        this.blueHandler = new Handler(){
             public void handleMessage(Message msg){
-                super.handleMessage(msg);
+                Log.d(TAG, "handle Message : "+msg);
+                //Read한 메시지 처리 - UI 조작이든 뭐든.
             }
         };
-
         if(bluetooth == null)
-            bluetooth = new BluetoothService(activity, handle);
-
-        if(bluetooth.getDeviceState())
-            bluetooth.enableBluetooth();
-        else
-            Toast.makeText(activity, "Please Check your Bluetooth Support.", Toast.LENGTH_LONG);
-
+            bluetooth = new BluetoothService(blueHandler);
     }
 
-    public void doDiscovery(){
-        IntentFilter filter;
+    public void listUp(){
+        Log.d(TAG, "Connect");
+        pepList = bluetooth.getPairedDevices();
 
-        // 한 개씩 찾아낼 때마다...
-        filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        activity.registerReceiver(receiver, filter);
+        listAdapter.clearAll();
+        for (BluetoothDevice pep : pepList)
+            addPEPToList(pep);
 
-        // 검색이 끝났을 때
-        filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        activity.registerReceiver(receiver, filter);
-
-        bluetooth.scanDevice();
+        listAdapter.notifyDataSetChanged();
     }
 
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if(BluetoothDevice.ACTION_FOUND.equals(action)){
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if(device.getBondState() != BluetoothDevice.BOND_BONDED)
-                    //리스트에 추가하기.
-                    addPEPToList(device);
+    public void connect(String mac){
+        BluetoothDevice pep = findPepByMac(mac);
+        //TODO:pep 객체 가지고 실제 연결하기.
+        bluetooth.connectTo(pep);
+    }
 
-            } else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
-                //검색이 끝났음을 알리기.
-                activity.onDiscoveryFinished();
-            }
+    public void disconnect(){
+        bluetooth.closeAll();
+    }
+
+    private BluetoothDevice findPepByMac(String mac){
+        BluetoothDevice pep = null;
+        Iterator<BluetoothDevice> i = pepList.iterator();
+        while(i.hasNext()){
+            pep = i.next();
+            if(pep.getAddress().equals(mac))
+                break;
         }
-    };
-
-    private void addPEPToList(BluetoothDevice device){
-        String pepName = device.getName();
-        String pepAddress = device.getAddress();
-        Map pep = new HashMap();
-        pep.put("pepName", pepName);
-        pep.put("pepAddress", pepAddress);
-        adapter.addPEP(pep);
+        return pep;
     }
 
-    public void connect(Map<String, String> pep){
-        String name = pep.get("pepName");
-        String address = pep.get("pepAddress");
-        bluetooth.connect(address);
+    private void addPEPToList(BluetoothDevice pep){
+        String pepName = pep.getName();
+        String pepAddress = pep.getAddress();
+        Log.d("AddPEPToList",pepName+" : "+pepAddress);
+        Map<String, String> profile = new HashMap<>();
+        profile.put("name", pepName);
+        profile.put("mac", pepAddress);
+        listAdapter.addPEP(profile);
     }
 
 }

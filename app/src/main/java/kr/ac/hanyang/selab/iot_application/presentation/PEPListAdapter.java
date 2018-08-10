@@ -1,5 +1,6 @@
 package kr.ac.hanyang.selab.iot_application.presentation;
 
+import android.bluetooth.BluetoothDevice;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import java.util.Map;
 import kr.ac.hanyang.selab.iot_application.R;
 
 public class PEPListAdapter extends RecyclerView.Adapter<PEPListAdapter.ViewHolder> {
+
     private List<Map<String, String>> dataSet;
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
@@ -26,9 +28,11 @@ public class PEPListAdapter extends RecyclerView.Adapter<PEPListAdapter.ViewHold
         this.dataSet = dataSet;
     }
 
-    public void addPEP(Map pep){
+    public void clearAll(){
+        dataSet.clear();
+    }
+    public void addPEP(Map<String, String> pep){
         dataSet.add(pep);
-        this.notifyDataSetChanged();
     }
 
     public Map<String, String> getPEP(int index){
@@ -37,13 +41,13 @@ public class PEPListAdapter extends RecyclerView.Adapter<PEPListAdapter.ViewHold
 
     @Override
     public PEPListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        TextView v = (TextView) LayoutInflater.from(parent.getContext()).inflate(R.layout.peplist_text_view, parent, false);
+        TextView v = (TextView)LayoutInflater.from(parent.getContext()).inflate(R.layout.peplist_text_view, parent, false);
         return new ViewHolder(v);
     }
 
     private ItemClick itemClick;
     public interface ItemClick{
-        public void onClick(View view, int position);
+        void onClick(View view, int position);
     }
     public void setItemClick(ItemClick itemClick){
         this.itemClick = itemClick;
@@ -52,8 +56,8 @@ public class PEPListAdapter extends RecyclerView.Adapter<PEPListAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position){
         final int POSITION = position;
-        Map pep = dataSet.get(POSITION);
-        holder.textView.setText(pep.get("pepName") + ":" + pep.get("pepAddress"));
+        Map<String, String> pep = dataSet.get(POSITION);
+        holder.textView.setText(pep.get("name") + ":" + pep.get("mac"));
 
         holder.textView.setOnClickListener(new View.OnClickListener(){
             @Override

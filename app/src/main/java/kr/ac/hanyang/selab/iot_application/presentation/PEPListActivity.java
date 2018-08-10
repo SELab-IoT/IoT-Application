@@ -1,18 +1,15 @@
 package kr.ac.hanyang.selab.iot_application.presentation;
 
-import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import kr.ac.hanyang.selab.iot_application.R;
@@ -35,9 +32,10 @@ public class PEPListActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_peplist);
+        setHandlers();
         if(con == null)
             con = new PEPListController(this, listAdapter);
-        setHandlers();
+
     }
 
     private void setHandlers(){
@@ -56,39 +54,26 @@ public class PEPListActivity extends AppCompatActivity{
         listAdapter.setItemClick(new PEPListAdapter.ItemClick() {
             @Override
             public void onClick(View view, int position) {
-                Map pep = listAdapter.getPEP(position);
-                con.connect(pep);
+                Map<String, String> pep = listAdapter.getPEP(position);
+                con.connect(pep.get("mac"));
             }
         });
 
     }
 
-    public void onDiscoveryFinished() {
-        //프로그래스 바 제거.
+    protected void onDestroy() {
+        con.disconnect();
+        super.onDestroy();
     }
 
     class PEPListButtonHandler implements View.OnClickListener{
         @Override
         public void onClick(View view) {
-            //프로그래스 바 활성화
-
-            //검색 시작
-            con.searchPEP();
+            //페어링된기기 검색
+            con.listUp();
         }
     }
 
-    //For Bluetooth Enable
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch(requestCode){
-            case BluetoothService.REQUEST_ENABLE_BT:
-                if(resultCode == Activity.RESULT_OK)
-                    con.doDiscovery();
-                else
-                    Log.d(TAG, "Bluetooth is not enabled");
-                break;
-        }
-    }
 
 
 }
