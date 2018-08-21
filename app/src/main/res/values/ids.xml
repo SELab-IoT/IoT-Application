@@ -7,4 +7,9 @@
     <item name="item_title" type="id" />
     <item name="device_list" type="id" />
     <item name="btn_device_search" type="id" />
+    <item name="action_list" type="id" />
+    <item name="text_device_Id" type="id" />
+    <item name="btn_action_execute" type="id" />
+    <item name="layout_params" type="id" />
+    <item name="text_action" type="id" />
 </resources>

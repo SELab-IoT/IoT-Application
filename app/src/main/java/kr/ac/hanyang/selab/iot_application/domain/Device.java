@@ -4,10 +4,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Device {
+public class Device implements Serializable {
 
     private String deviceID;
     private List<DeviceAction> actions;

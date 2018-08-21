@@ -1,5 +1,6 @@
 package kr.ac.hanyang.selab.iot_application.presentation;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,14 +9,15 @@ import android.view.View;
 import android.widget.Button;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import kr.ac.hanyang.selab.iot_application.R;
 import kr.ac.hanyang.selab.iot_application.controller.DeviceListController;
+import kr.ac.hanyang.selab.iot_application.domain.Device;
+import kr.ac.hanyang.selab.iot_application.presentation.adapter.DeviceListAdapter;
 
 public class DeviceListActivity extends AppCompatActivity {
 
-    private static final String TAG = "PEPListActivity";
+    private static final String TAG = "DeviceListActivity";
 
     private RecyclerView listView;
     private RecyclerView.LayoutManager listLayout;
@@ -26,7 +28,7 @@ public class DeviceListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_peplist);
+        setContentView(R.layout.activity_device_list);
         setHandlers();
         if(con == null)
             con = new DeviceListController(this, listAdapter);
@@ -38,28 +40,29 @@ public class DeviceListActivity extends AppCompatActivity {
         Button searchDevice = findViewById(R.id.btn_device_search);
         searchDevice.setOnClickListener(new DeviceListButtonHandler());
 
-        listView = findViewById(R.id.pep_list);
+        listView = findViewById(R.id.device_list);
         listView.setHasFixedSize(true);
 
         listLayout = new LinearLayoutManager(this);
         listView.setLayoutManager(listLayout);
 
-        listAdapter = new DeviceListAdapter(new ArrayList<String>());
+        listAdapter = new DeviceListAdapter(new ArrayList<Device>());
         listView.setAdapter(listAdapter);
         listAdapter.setItemClick(new DeviceListAdapter.ItemClick() {
             @Override
             public void onClick(View view, int position) {
-                String device = listAdapter.getDevice(position);
-                //TODO:디바이스 프로필 조회 후 액션 선택 액티비티로 넘기기.
+                Device device = listAdapter.getDevice(position);
+                Intent intent = new Intent(DeviceListActivity.this, ActionListActivity.class);
+                intent.putExtra("device", device);
+                intent.putExtra("pepIP", con.getPEP().getIp());
+                startActivity(intent);
             }
         });
-
     }
 
     class DeviceListButtonHandler implements View.OnClickListener{
         @Override
         public void onClick(View view) {
-            //TODO: 디바이스 목록 조회
             con.listUp();
         }
     }

@@ -1,7 +1,5 @@
 package kr.ac.hanyang.selab.iot_application.presentation;
 
-import android.bluetooth.BluetoothDevice;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,7 +12,7 @@ import java.util.Map;
 
 import kr.ac.hanyang.selab.iot_application.R;
 import kr.ac.hanyang.selab.iot_application.controller.PEPListController;
-import kr.ac.hanyang.selab.iot_application.utill.BluetoothService;
+import kr.ac.hanyang.selab.iot_application.presentation.adapter.PEPListAdapter;
 
 public class PEPListActivity extends AppCompatActivity{
 

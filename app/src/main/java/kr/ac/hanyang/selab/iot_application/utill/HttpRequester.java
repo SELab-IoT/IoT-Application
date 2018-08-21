@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +18,9 @@ import java.util.Map;
 
 public class HttpRequester extends AsyncTask<Void, Void, String> {
 
+    private static final String TAG = "HttpRequester";
+
+    // TODO: 테스팅 시 selab.hanyang.ac.kr로 플랫폼 매니저 이식 후 아래 주소 바꾸고 테스팅.
     public static final String PLATFORM_MANAGER = "http://166.104.185.84:8080/";
 
     private Handler handler;
@@ -35,7 +39,10 @@ public class HttpRequester extends AsyncTask<Void, Void, String> {
         }
     }
 
-    public String request(){
+    private String request(){
+
+        Log.d(TAG,"Request: "+url+"("+method+")");
+
         HttpURLConnection con = null;
         StringBuffer params = new StringBuffer();
         if(this.params == null)
@@ -77,6 +84,7 @@ public class HttpRequester extends AsyncTask<Void, Void, String> {
             while((line = reader.readLine()) != null)
                 page += line;
 
+            Log.d(TAG,"Response: "+page);
             return page;
 
         } catch (MalformedURLException e) {

@@ -1,6 +1,5 @@
-package kr.ac.hanyang.selab.iot_application.presentation;
+package kr.ac.hanyang.selab.iot_application.presentation.adapter;
 
-import android.bluetooth.BluetoothDevice;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;

@@ -8,12 +8,11 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import kr.ac.hanyang.selab.iot_application.presentation.PEPListActivity;
-import kr.ac.hanyang.selab.iot_application.presentation.PEPListAdapter;
+import kr.ac.hanyang.selab.iot_application.presentation.adapter.PEPListAdapter;
 import kr.ac.hanyang.selab.iot_application.utill.BluetoothService;
 
 public class PEPListController {

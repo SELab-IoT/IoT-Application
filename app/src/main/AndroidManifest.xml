@@ -22,7 +22,9 @@
         </activity>
         <activity android:name=".presentation.PEPListActivity" />
         <activity android:name=".presentation.PolicyEditorActivity" />
-        <activity android:name=".presentation.DeviceListActivity"></activity>
+        <activity android:name=".presentation.DeviceListActivity" />
+        <activity android:name=".presentation.ActionListActivity" />
+        <activity android:name=".presentation.ActionExecuteActivity"></activity>
     </application>
 
 </manifest>
