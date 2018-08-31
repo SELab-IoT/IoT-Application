@@ -48,11 +48,7 @@ public class ActionListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int position) {
                 DeviceAction action = listAdapter.getAction(position);
-                Intent intent = new Intent(ActionListActivity.this, ActionExecuteActivity.class);
-                intent.putExtra("action", action);
-                intent.putExtra("device", con.getDevice());
-                intent.putExtra("pepIP", getIntent().getStringExtra("pepIP"));
-                startActivity(intent);
+                con.onActionSelected(action);
             }
         });
 

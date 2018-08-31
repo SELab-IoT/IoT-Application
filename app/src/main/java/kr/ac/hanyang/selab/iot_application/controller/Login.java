@@ -15,4 +15,8 @@ public class Login {
 
         return true;
     }
+
+    public static String getId() {
+        return id;
+    }
 }

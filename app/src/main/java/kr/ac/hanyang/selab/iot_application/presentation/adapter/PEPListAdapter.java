@@ -1,46 +1,50 @@
 package kr.ac.hanyang.selab.iot_application.presentation.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Map;
 
 import kr.ac.hanyang.selab.iot_application.R;
+import kr.ac.hanyang.selab.iot_application.domain.PEP;
 
 public class PEPListAdapter extends RecyclerView.Adapter<PEPListAdapter.ViewHolder> {
 
-    private List<Map<String, String>> dataSet;
+    private List<PEP> dataSet;
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView textView;
-        public ViewHolder(TextView v){
+        public TextView view;
+        public LinearLayout layout;
+        public ViewHolder(LinearLayout v){
             super(v);
-            textView = v;
+            view = (TextView) v.getChildAt(0);
         }
     }
 
-    public PEPListAdapter(List<Map<String, String>> dataSet){
+    public PEPListAdapter(List<PEP> dataSet){
         this.dataSet = dataSet;
     }
 
     public void clearAll(){
         dataSet.clear();
     }
-    public void addPEP(Map<String, String> pep){
+    public void addPEP(PEP pep){
         dataSet.add(pep);
     }
 
-    public Map<String, String> getPEP(int index){
+    public PEP getPEP(int index){
         return dataSet.get(index);
     }
 
     @Override
     public PEPListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        TextView v = (TextView)LayoutInflater.from(parent.getContext()).inflate(R.layout.peplist_text_view, parent, false);
+        LinearLayout v = (LinearLayout)LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         return new ViewHolder(v);
     }
 
@@ -55,10 +59,10 @@ public class PEPListAdapter extends RecyclerView.Adapter<PEPListAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position){
         final int POSITION = position;
-        Map<String, String> pep = dataSet.get(POSITION);
-        holder.textView.setText(pep.get("name") + ":" + pep.get("mac"));
+        PEP pep = dataSet.get(POSITION);
+        holder.view.setText(pep.getIp());
 
-        holder.textView.setOnClickListener(new View.OnClickListener(){
+        holder.view.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 if(itemClick != null)

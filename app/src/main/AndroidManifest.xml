@@ -20,11 +20,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".presentation.PEPListActivity" />
+        <activity android:name=".presentation.PEPRegistrationActivity" />
         <activity android:name=".presentation.PolicyEditorActivity" />
         <activity android:name=".presentation.DeviceListActivity" />
         <activity android:name=".presentation.ActionListActivity" />
-        <activity android:name=".presentation.ActionExecuteActivity"></activity>
+        <activity android:name=".presentation.ActionExecuteActivity" />
+        <activity android:name=".presentation.PEPListActivity" />
+        <activity android:name=".presentation.DeviceRegistrationActivity"></activity>
     </application>
 
 </manifest>

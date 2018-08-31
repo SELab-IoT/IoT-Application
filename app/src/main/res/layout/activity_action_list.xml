@@ -12,14 +12,14 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@id/text_device_Id"
+            android:id="@+id/text_device_Id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Device : "
             android:textSize="24dp"/>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@id/action_list"
+            android:id="@+id/action_list"
             android:layout_width="match_parent"
             android:layout_height="450dp" />
 

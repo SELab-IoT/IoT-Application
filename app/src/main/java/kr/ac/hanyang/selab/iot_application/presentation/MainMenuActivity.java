@@ -21,9 +21,11 @@ public class MainMenuActivity extends AppCompatActivity {
     }
 
     private void setHandlers(){
-        Button searchPEP = findViewById(R.id.btn_pep_search);
+        Button registerPEP = findViewById(R.id.btn_pep_registration);
+        Button pepList = findViewById(R.id.btn_registered_pep_list);
         Button editPolicy = findViewById(R.id.btn_policy_edit);
-        searchPEP.setOnClickListener(new MenuButtonHandler());
+        registerPEP.setOnClickListener(new MenuButtonHandler());
+        pepList.setOnClickListener(new MenuButtonHandler());
         editPolicy.setOnClickListener(new MenuButtonHandler());
     }
 
@@ -33,8 +35,11 @@ public class MainMenuActivity extends AppCompatActivity {
             int id = view.getId();
             MainMenuController con = new MainMenuController();
             switch(id){
-                case R.id.btn_pep_search:
-                    con.searchPEP(MainMenuActivity.this);
+                case R.id.btn_pep_registration:
+                    con.registerPEP(MainMenuActivity.this);
+                    break;
+                case R.id.btn_registered_pep_list:
+                    con.pepList(MainMenuActivity.this);
                     break;
                 case R.id.btn_policy_edit:
                     con.editPolicy(MainMenuActivity.this);

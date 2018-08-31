@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -16,10 +17,11 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.Vi
     private List<Device> dataSet;
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView textView;
-        public ViewHolder(TextView v){
+        public TextView view;
+        public LinearLayout layout;
+        public ViewHolder(LinearLayout v){
             super(v);
-            textView = v;
+            view = (TextView) v.getChildAt(0);
         }
     }
 
@@ -40,7 +42,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.Vi
 
     @Override
     public DeviceListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        TextView v = (TextView)LayoutInflater.from(parent.getContext()).inflate(R.layout.peplist_text_view, parent, false);
+        LinearLayout v = (LinearLayout)LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         return new ViewHolder(v);
     }
 
@@ -56,9 +58,9 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.Vi
     public void onBindViewHolder(ViewHolder holder, int position){
         final int POSITION = position;
         Device device = dataSet.get(POSITION);
-        holder.textView.setText(device.getDeviceID());
+        holder.view.setText(device.getDeviceID());
 
-        holder.textView.setOnClickListener(new View.OnClickListener(){
+        holder.view.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 if(itemClick != null)

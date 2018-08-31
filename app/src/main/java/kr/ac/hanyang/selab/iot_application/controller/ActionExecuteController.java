@@ -21,6 +21,7 @@ import java.util.Map;
 import kr.ac.hanyang.selab.iot_application.R;
 import kr.ac.hanyang.selab.iot_application.domain.Device;
 import kr.ac.hanyang.selab.iot_application.domain.DeviceAction;
+import kr.ac.hanyang.selab.iot_application.domain.PEP;
 import kr.ac.hanyang.selab.iot_application.presentation.ActionExecuteActivity;
 import kr.ac.hanyang.selab.iot_application.utill.HttpRequester;
 
@@ -95,8 +96,12 @@ public class ActionExecuteController {
         requestParam.put("param", payload.toString());
 
         Intent intent = activity.getIntent();
-        String deviceID = ((Device) intent.getSerializableExtra("device")).getDeviceID();
-        String pepIP = intent.getStringExtra("pepIP");
+
+        PEP pep = (PEP) intent.getSerializableExtra("pep");
+        Device device = (Device) intent.getSerializableExtra("device");
+
+        String deviceID = device.getDeviceID();
+        String pepIP = pep.getIp();
         String url =  pepIP + "/devices/" + deviceID;
         String method = "POST";
         HttpRequester http = new HttpRequester(httpHandler, url, method, requestParam);

@@ -11,6 +11,7 @@ import java.util.List;
 public class PEP implements Serializable {
     private String ip;
     private List<Device> devices;
+
     public PEP(JSONObject pep){
 
         if(devices == null)

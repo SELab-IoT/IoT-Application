@@ -12,15 +12,15 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@id/pep_list"
+            android:id="@+id/pep_list"
             android:layout_width="match_parent"
             android:layout_height="450dp" />
 
         <Button
-            android:id="@id/btn_bluetooth_search"
+            android:id="@+id/btn_query"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="위 블루투스 기기중 PEP 선택" />
+            android:text="등록된 PEP 목록 조회" />
 
     </LinearLayout>
 

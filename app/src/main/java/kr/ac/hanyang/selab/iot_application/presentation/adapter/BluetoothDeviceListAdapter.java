@@ -8,13 +8,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Map;
 
 import kr.ac.hanyang.selab.iot_application.R;
-import kr.ac.hanyang.selab.iot_application.domain.DeviceAction;
 
-public class ActionListAdapter extends RecyclerView.Adapter<ActionListAdapter.ViewHolder> {
+public class BluetoothDeviceListAdapter extends RecyclerView.Adapter<BluetoothDeviceListAdapter.ViewHolder> {
 
-    private List<DeviceAction> dataSet;
+    private List<Map<String, String>> dataSet;
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         public TextView view;
@@ -25,23 +25,23 @@ public class ActionListAdapter extends RecyclerView.Adapter<ActionListAdapter.Vi
         }
     }
 
-    public ActionListAdapter(List<DeviceAction> dataSet){
+    public BluetoothDeviceListAdapter(List<Map<String, String>> dataSet){
         this.dataSet = dataSet;
     }
 
     public void clearAll(){
         dataSet.clear();
     }
-    public void addAction(DeviceAction action){
-        dataSet.add(action);
+    public void addBluetoothDevice(Map<String, String> blueDevice){
+        dataSet.add(blueDevice);
     }
 
-    public DeviceAction getAction(int index){
+    public Map<String, String> getBluetoothDevice(int index){
         return dataSet.get(index);
     }
 
     @Override
-    public ActionListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+    public BluetoothDeviceListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         return new ViewHolder(v);
     }
@@ -57,8 +57,8 @@ public class ActionListAdapter extends RecyclerView.Adapter<ActionListAdapter.Vi
     @Override
     public void onBindViewHolder(ViewHolder holder, int position){
         final int POSITION = position;
-        DeviceAction action = dataSet.get(POSITION);
-        holder.view.setText(action.getActionID());
+        Map<String, String> blueDevice = dataSet.get(POSITION);
+        holder.view.setText(blueDevice.get("name") + ":" + blueDevice.get("mac"));
 
         holder.view.setOnClickListener(new View.OnClickListener(){
             @Override

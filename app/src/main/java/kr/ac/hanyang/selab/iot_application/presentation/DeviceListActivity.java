@@ -1,12 +1,10 @@
 package kr.ac.hanyang.selab.iot_application.presentation;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 
 import java.util.ArrayList;
 
@@ -32,15 +30,12 @@ public class DeviceListActivity extends AppCompatActivity {
         setHandlers();
         if(con == null)
             con = new DeviceListController(this, listAdapter);
-
+        con.listUp();
     }
 
     private void setHandlers(){
 
-        Button searchDevice = findViewById(R.id.btn_device_search);
-        searchDevice.setOnClickListener(new DeviceListButtonHandler());
-
-        listView = findViewById(R.id.device_list);
+        listView = findViewById(R.id.available_device_list);
         listView.setHasFixedSize(true);
 
         listLayout = new LinearLayoutManager(this);
@@ -52,18 +47,10 @@ public class DeviceListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int position) {
                 Device device = listAdapter.getDevice(position);
-                Intent intent = new Intent(DeviceListActivity.this, ActionListActivity.class);
-                intent.putExtra("device", device);
-                intent.putExtra("pepIP", con.getPEP().getIp());
-                startActivity(intent);
+                con.onDeviceSelected(device);
             }
         });
+
     }
 
-    class DeviceListButtonHandler implements View.OnClickListener{
-        @Override
-        public void onClick(View view) {
-            con.listUp();
-        }
-    }
 }
