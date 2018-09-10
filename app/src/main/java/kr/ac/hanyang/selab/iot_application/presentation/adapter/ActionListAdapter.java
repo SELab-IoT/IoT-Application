@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Map;
 
 import kr.ac.hanyang.selab.iot_application.R;
 import kr.ac.hanyang.selab.iot_application.domain.DeviceAction;
@@ -58,7 +59,17 @@ public class ActionListAdapter extends RecyclerView.Adapter<ActionListAdapter.Vi
     public void onBindViewHolder(ViewHolder holder, int position){
         final int POSITION = position;
         DeviceAction action = dataSet.get(POSITION);
-        holder.view.setText(action.getActionID());
+
+        String params = "";
+        int size = action.getParams().size();
+        for (int i = 0; i < size; i++) {
+            Map<String, String> param = action.getParams().get(i);
+            String p = param.get("name") + ": " + param.get("type");
+            params += p;
+            if((i+1) < size) params += ", ";
+        }
+
+        holder.view.setText(action.getActionName() + "("+ params +")");
 
         holder.view.setOnClickListener(new View.OnClickListener(){
             @Override

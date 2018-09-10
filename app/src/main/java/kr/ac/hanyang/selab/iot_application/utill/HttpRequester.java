@@ -14,29 +14,60 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class HttpRequester extends AsyncTask<Void, Void, String> {
 
     private static final String TAG = "HttpRequester";
 
     // TODO: 테스팅 시 selab.hanyang.ac.kr로 플랫폼 매니저 이식 후 아래 주소 바꾸고 테스팅.
-    public static final String PLATFORM_MANAGER = "http://166.104.185.84:8080/";
+    public static final String PLATFORM_MANAGER = "http://selab.hanyang.ac.kr:8080/";
 
     private Handler handler;
     private URL url;
     private String method;
-    private ContentValues params;
+    private String strParams;
 
     public HttpRequester(Handler handler, String url, String method, ContentValues params){
         try {
             this.handler = handler;
             this.url = new URL(url);
             this.method = method;
-            this.params = params;
+
+            if(method.equals("GET")) {
+                this.strParams = toGETParameterForm(params);
+                this.url = new URL(url.toString()+"?"+strParams);
+            } else if(method.equals("POST"))
+                this.strParams = toPOSTParameterForm(params);
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+    }
+
+    private String toGETParameterForm(ContentValues params) {
+        if(params != null) {
+            Iterator<Map.Entry<String, Object>> ps = params.valueSet().iterator();
+            String buf = "";
+            while(ps.hasNext()){
+                Map.Entry<String, Object> entry = ps.next();
+                buf += entry.getKey() + "=" + entry.getValue();
+                if(ps.hasNext()) buf += "&";
+            }
+            Log.d(TAG, "RequestParam : \n"+buf);
+            return buf;
+        } else return "";
+    }
+
+    private String toPOSTParameterForm(ContentValues params) {
+        //application/x-www-form-urlencoded은 파라메터 포맷은 똑같고 url에 넣는가 OutputStream으로 쏘는가 차이이다.
+        //차후 POST로 보낼 때 Json을 사용하게 되는 경우 이부분을 수정하도록 한다.
+        if(params != null)
+            return toGETParameterForm(params);
+        else return "";
     }
 
     private String request(){
@@ -44,52 +75,42 @@ public class HttpRequester extends AsyncTask<Void, Void, String> {
         Log.d(TAG,"Request: "+url+"("+method+")");
 
         HttpURLConnection con = null;
-        StringBuffer params = new StringBuffer();
-        if(this.params == null)
-            params.append("");
-        else{
-            boolean isAnd = false;
-            String key, value;
-            for(Map.Entry<String, Object> param : this.params.valueSet()){
-                key = param.getKey();
-                value = param.getValue().toString();
-                if(isAnd)
-                    params.append("&");
-                params.append(key).append("=").append(value);
-                isAnd = !isAnd & this.params.size() >= 2;
-            }
-        }
 
         try{
+
             con = (HttpURLConnection) url.openConnection();
 
             con.setRequestMethod(this.method);
             con.setRequestProperty("Accept-Charset","UTF-8");
-            con.setRequestProperty("Content-type", "application/x-www-form-urlencoded;charset=UTF-8");
+            con.setRequestProperty("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
 
-            String strParams = params.toString();
-            OutputStream out = con.getOutputStream();
-            out.write(strParams.getBytes("UTF-8"));
-            out.flush();
-            out.close();
+            //GET은 이렇게 파라미터 첨부를 할 수 없음.
+            if(!this.method.equals("GET")) {
+                OutputStream out = con.getOutputStream();
+                out.write(strParams.getBytes("UTF-8"));
+                out.flush();
+                out.close();
+            }
 
             if(con.getResponseCode() != HttpURLConnection.HTTP_OK)
                 return null;
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
-
-            String line;
             String page = "";
+            String line = "";
 
             while((line = reader.readLine()) != null)
                 page += line;
+            reader.close();
 
             Log.d(TAG,"Response: "+page);
             return page;
 
         } catch (MalformedURLException e) {
+            Log.e(TAG, "Malformed URL", e);
             e.printStackTrace();
         } catch (IOException e) {
+            Log.e(TAG, "IOException - Check the destination server is opened.", e);
             e.printStackTrace();
         } finally {
             if(con != null) con.disconnect();

@@ -45,16 +45,18 @@ public class PEPListController {
                 String profile = data.getString("msg");
                 if(profile != null) {
                     try {
-                        //디버그를 위해 PEPGroup은 한개라고 가정
-                        JSONArray jsonPEPGrps = new JSONArray(profile);
-                        JSONObject jsonPEPGrp = jsonPEPGrps.getJSONObject(0);
-                        JSONArray jsonPEPs = jsonPEPGrp.getJSONArray("pepProfiles");
-                        int len = jsonPEPs.length();
 
-                        for(int i=0; i<len; i++){
-                            JSONObject jsonPEP = jsonPEPs.getJSONObject(i);
-                            PEP pep = new PEP(jsonPEP);
-                            addPEPToList(pep);
+                        JSONArray jsonPEPGrps = new JSONArray(profile);
+                        int grp_cnt = jsonPEPGrps.length();
+                        for(int i=0; i < grp_cnt; i++) {
+                            JSONObject jsonPEPGrp = jsonPEPGrps.getJSONObject(i);
+                            JSONArray jsonPEPs = jsonPEPGrp.getJSONArray("pepProfiles");
+                            int pep_cnt = jsonPEPs.length();
+                            for(int j=0; j<pep_cnt; j++){
+                                JSONObject jsonPEP = jsonPEPs.getJSONObject(j);
+                                PEP pep = new PEP(jsonPEP);
+                                addPEPToList(pep);
+                            }
                         }
 
                     } catch (JSONException e) {
@@ -67,7 +69,9 @@ public class PEPListController {
             }
         };
 
-        String url = HttpRequester.PLATFORM_MANAGER + "profile/" + Login.getId();
+        listAdapter.clearAll();
+
+        String url = HttpRequester.PLATFORM_MANAGER + "pep-group/profile/" + Login.getId();
         String method = "GET";
         HttpRequester http = new HttpRequester(httpHandler, url, method, null);
         http.execute();

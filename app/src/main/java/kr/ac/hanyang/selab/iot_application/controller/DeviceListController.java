@@ -25,16 +25,19 @@ public class DeviceListController {
 
     private DeviceListActivity activity;
     private DeviceListAdapter listAdapter;
-    
+
     private PEP pep;
 
     public DeviceListController(DeviceListActivity activity, DeviceListAdapter adapter){
         this.activity = activity;
         this.listAdapter = adapter;
-        pep = (PEP) activity.getIntent().getSerializableExtra("pep");
+        this.pep = (PEP) activity.getIntent().getSerializableExtra("pep");
     }
 
     public void listUp(){
+
+        listAdapter.clearAll();
+
         List<Device> devices = pep.getDevices();
         int size = devices.size();
         for(int i=0; i<size; i++)

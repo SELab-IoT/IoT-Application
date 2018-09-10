@@ -32,10 +32,13 @@ public class ActionListController {
     }
 
     public void listUp(){
+
+        listAdapter.clearAll();
+
         List<DeviceAction> actions = device.getActions();
 
         TextView t = activity.findViewById(R.id.text_device_Id);
-        t.setText(t.getText() + device.getDeviceID());
+        t.setText(t.getText() + device.getDeviceName());
         int size = actions.size();
         for(int i=0;i<size;i++)
             addActionToList(actions.get(i));

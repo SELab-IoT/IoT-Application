@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -43,7 +44,7 @@ public class ActionExecuteController {
         Intent intent = activity.getIntent();
         DeviceAction action = (DeviceAction)intent.getSerializableExtra("action");
         TextView t = activity.findViewById(R.id.text_action);
-        t.append(action.getActionID());
+        t.append(action.getActionName());
 
         List<Map<String, String>> params = action.getParams();
         int size = params.size();
@@ -56,17 +57,22 @@ public class ActionExecuteController {
         String name = param.get("name");
         String type = param.get("type");
 
-        TextInputLayout paramInput = new TextInputLayout(activity);
-        paramInput.setHint(name + "(" + type + ")");
-        params.add(paramInput);
+        TextInputLayout field = new TextInputLayout(activity);
+        field.setHint(name + "(" + type + ")");
+
+        TextInputEditText input = new TextInputEditText(activity);
+        field.addView(input);
 
         LinearLayout paramsLayout = activity.findViewById(R.id.layout_params);
-        paramsLayout.addView(paramInput);
+        paramsLayout.addView(field);
+
+        params.add(field);
 
     }
 
     public void execute(){
 
+        // 실행 결과 통보
         httpHandler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
@@ -77,32 +83,28 @@ public class ActionExecuteController {
         };
 
         // Set Payload
-        String action = ((TextView)activity.findViewById(R.id.text_action)).getText().toString();
-
-        ContentValues requestParam = new ContentValues();
-        JSONObject payload = new JSONObject();
-
-        try {
-            payload.put("action", action);
-            JSONArray paramValues = new JSONArray();
-            int size = params.size();
-            for(int i=0; i<size; i++)
-                paramValues.put(params.get(i));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        requestParam.put("param", payload.toString());
-
         Intent intent = activity.getIntent();
-
-        PEP pep = (PEP) intent.getSerializableExtra("pep");
+        DeviceAction action = (DeviceAction) intent.getSerializableExtra("action");
         Device device = (Device) intent.getSerializableExtra("device");
 
-        String deviceID = device.getDeviceID();
-        String pepIP = pep.getIp();
-        String url =  pepIP + "/devices/" + deviceID;
+        ContentValues requestParam = new ContentValues();
+
+        JSONArray paramValues = new JSONArray();
+        int size = params.size();
+        for(int i=0; i<size; i++) {
+            String param = params.get(i).getEditText().getText().toString();
+            paramValues.put(param);
+        }
+
+        requestParam.put("userId", Login.getId());
+        requestParam.put("action", action.getActionName());
+        requestParam.put("params", paramValues.toString());
+
+        PEP pep = (PEP) intent.getSerializableExtra("pep");
+
+        String deviceId = device.getDeviceId();
+        String pepIp = pep.getIp();
+        String url =  "http://" + pepIp + "/devices/" + deviceId;
         String method = "POST";
         HttpRequester http = new HttpRequester(httpHandler, url, method, requestParam);
         http.execute();

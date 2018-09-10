@@ -12,15 +12,17 @@ import java.util.Map;
 
 public class DeviceAction implements Serializable{
 
-    private String actionID;
+    private String actionId;
+    private String actionName;
     private List<Map<String, String>> params;
 
     public DeviceAction(JSONObject action){
 
         params = new ArrayList<>();
         try {
-            actionID = action.getString("actionID");
-            JSONArray params = action.getJSONArray("params");
+            actionId = action.getString("actionId");
+            actionName = action.getString("actionName");
+            JSONArray params = new JSONArray(action.getString("params"));
 
             int len = params.length();
             for(int i=0;i<len;i++){
@@ -38,8 +40,12 @@ public class DeviceAction implements Serializable{
         }
     }
 
-    public String getActionID() {
-        return actionID;
+    public String getActionId() {
+        return actionId;
+    }
+
+    public String getActionName() {
+        return actionName;
     }
 
     public List<Map<String, String>> getParams() {

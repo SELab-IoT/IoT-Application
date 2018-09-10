@@ -10,14 +10,16 @@ import java.util.List;
 
 public class Device implements Serializable {
 
-    private String deviceID;
+    private String deviceId;
+    private String deviceName;
     private List<DeviceAction> actions;
 
     public Device(JSONObject device) {
         this.actions = new ArrayList<>();
 
         try {
-            deviceID = device.getString("deviceID");
+            deviceId = device.getString("deviceId");
+            deviceName = device.getString("deviceName");
             JSONArray actions = device.getJSONArray("actions");
             int len = actions.length();
             for(int i=0;i<len;i++){
@@ -31,11 +33,15 @@ public class Device implements Serializable {
     }
 
     public Device(String id){
-        this.deviceID = id;
+        this.deviceId = id;
     }
 
-    public String getDeviceID() {
-        return deviceID;
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
     }
 
     public List<DeviceAction> getActions() {

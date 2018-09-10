@@ -27,7 +27,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pep_registration);
+        setContentView(R.layout.activity_device_registration);
         setHandlers();
 //        if(con == null)
 //            con = new DeviceRegistrationController(this, listAdapter);
@@ -41,7 +41,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
         Button searchDevice = findViewById(R.id.btn_device_search);
         searchDevice.setOnClickListener(new DeviceSearchButtonHandler());
 
-        listView = findViewById(R.id.pep_list);
+        listView = findViewById(R.id.bluetooth_device_list);
         listView.setHasFixedSize(true);
 
         listLayout = new LinearLayoutManager(this);

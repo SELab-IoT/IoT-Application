@@ -20,7 +20,7 @@ import kr.ac.hanyang.selab.iot_application.utill.BluetoothService;
 
 public class PEPRegistrationController {
 
-    private final String TAG = "PEPRegistrationController";
+    private final String TAG = "PEPRegistrationCon";
     private BluetoothService bluetooth = null;
 
     private Handler blueHandler;
