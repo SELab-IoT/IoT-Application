@@ -36,6 +36,7 @@ public class DeviceRegistrationController {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+                DialogUtil.getInstance().stopProgress(activity);
                 Log.d(TAG, msg.toString());
                 Bundle data = msg.getData();
                 String deviceList = data.getString("msg");
@@ -43,12 +44,14 @@ public class DeviceRegistrationController {
                     try {
                         JSONArray names = new JSONArray(deviceList);
                         int len = names.length();
+
+                        if(len == 0) DialogUtil.showMessage(activity, "Sorry", "No Devices nearby PEP");
+
                         for(int i=0; i<len; i++)
                             addDeviceNameToList(names.getString(i));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    DialogUtil.getInstance().stopProgress(activity);
                 } else {
                     Log.e(TAG, "No Response");
                 }

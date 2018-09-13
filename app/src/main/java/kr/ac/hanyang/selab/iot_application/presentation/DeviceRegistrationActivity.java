@@ -61,8 +61,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
     class DeviceSearchButtonHandler implements View.OnClickListener{
         @Override
         public void onClick(View view) {
-            // PEP에게 목록 조회하기
-//            con.listUp();
+            con.listUp();
         }
     }
 }
