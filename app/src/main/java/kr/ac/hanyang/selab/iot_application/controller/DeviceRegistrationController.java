@@ -58,6 +58,8 @@ public class DeviceRegistrationController {
             }
         };
 
+        listAdapter.clearAll();
+
         PEP pep = (PEP) activity.getIntent().getSerializableExtra("pep");
 
         String url = "http://" + pep.getIp() + "/devices/scan";
