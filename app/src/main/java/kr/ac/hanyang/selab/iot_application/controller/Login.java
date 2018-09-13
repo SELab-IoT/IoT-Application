@@ -1,5 +1,6 @@
 package kr.ac.hanyang.selab.iot_application.controller;
 
+// TODO: 시간나면 Singleton으로 개선
 public class Login {
 
     //Maybe Temporal

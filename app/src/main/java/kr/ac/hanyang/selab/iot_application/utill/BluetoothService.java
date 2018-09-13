@@ -63,7 +63,6 @@ public class BluetoothService {
 
     public void closeAll(){
         try{
-
             send("close");
 
             // TODO: send 후 바로 닫으면 예외 터지는데 어떻게 지연시켜야 할지 고민

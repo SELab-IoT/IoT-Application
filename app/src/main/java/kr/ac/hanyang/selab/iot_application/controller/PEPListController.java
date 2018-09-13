@@ -13,13 +13,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import kr.ac.hanyang.selab.iot_application.R;
-import kr.ac.hanyang.selab.iot_application.domain.Device;
 import kr.ac.hanyang.selab.iot_application.domain.PEP;
 import kr.ac.hanyang.selab.iot_application.presentation.DeviceListActivity;
 import kr.ac.hanyang.selab.iot_application.presentation.DeviceRegistrationActivity;
 import kr.ac.hanyang.selab.iot_application.presentation.PEPListActivity;
 import kr.ac.hanyang.selab.iot_application.presentation.adapter.PEPListAdapter;
 import kr.ac.hanyang.selab.iot_application.utill.HttpRequester;
+import kr.ac.hanyang.selab.iot_application.utill.DialogUtil;
 
 public class PEPListController {
     private final String TAG = "PEPListController";
@@ -36,6 +36,8 @@ public class PEPListController {
     //For testing... one pep group.
     public void listUp(){
 
+        DialogUtil.getInstance().startProgress(activity);
+
         httpHandler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
@@ -45,7 +47,6 @@ public class PEPListController {
                 String profile = data.getString("msg");
                 if(profile != null) {
                     try {
-
                         JSONArray jsonPEPGrps = new JSONArray(profile);
                         int grp_cnt = jsonPEPGrps.length();
                         for(int i=0; i < grp_cnt; i++) {
@@ -65,7 +66,7 @@ public class PEPListController {
                 } else {
                     Log.e(TAG, "No Response");
                 }
-
+                DialogUtil.getInstance().stopProgress(activity);
             }
         };
 

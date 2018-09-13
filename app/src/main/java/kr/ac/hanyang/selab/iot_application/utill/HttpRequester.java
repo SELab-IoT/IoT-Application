@@ -5,15 +5,21 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.JsonReader;
 import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -22,8 +28,6 @@ import java.util.stream.Collectors;
 public class HttpRequester extends AsyncTask<Void, Void, String> {
 
     private static final String TAG = "HttpRequester";
-
-    // TODO: 테스팅 시 selab.hanyang.ac.kr로 플랫폼 매니저 이식 후 아래 주소 바꾸고 테스팅.
     public static final String PLATFORM_MANAGER = "http://selab.hanyang.ac.kr:8080/";
 
     private Handler handler;
@@ -49,24 +53,46 @@ public class HttpRequester extends AsyncTask<Void, Void, String> {
     }
 
     private String toGETParameterForm(ContentValues params) {
-        if(params != null) {
-            Iterator<Map.Entry<String, Object>> ps = params.valueSet().iterator();
-            String buf = "";
-            while(ps.hasNext()){
-                Map.Entry<String, Object> entry = ps.next();
-                buf += entry.getKey() + "=" + entry.getValue();
-                if(ps.hasNext()) buf += "&";
+        if(params == null) return "";
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+        try {
+            for (Map.Entry<String, Object> param : params.valueSet()) {
+                result.append(first ? "" : "&");
+                first = false;
+                result.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+                result.append("=");
+                result.append(URLEncoder.encode(param.getValue().toString(), "UTF-8"));
             }
-            Log.d(TAG, "RequestParam : \n"+buf);
-            return buf;
-        } else return "";
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return result.toString();
     }
 
     private String toPOSTParameterForm(ContentValues params) {
-        //application/x-www-form-urlencoded은 파라메터 포맷은 똑같고 url에 넣는가 OutputStream으로 쏘는가 차이이다.
-        //차후 POST로 보낼 때 Json을 사용하게 되는 경우 이부분을 수정하도록 한다.
-        if(params != null)
-            return toGETParameterForm(params);
+        //TODO: 차후 POST로 보낼 때 Json을 사용하게 되는 경우 이부분을 수정하도록 한다.
+        JSONObject ps = new JSONObject();
+        if(params != null) {
+            for(Map.Entry<String, Object> param : params.valueSet()){
+                String key = param.getKey();
+                String value = param.getValue().toString();
+
+                try {
+                    //is value JSON?
+                    JSONObject test = new JSONObject("{\"" + key + "\":" + value + "}");
+                    ps.put(key, test.get(key));
+                } catch (JSONException e) {
+                    try {
+                        ps.put(key, value);
+                    } catch (JSONException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+
+            }
+            return ps.toString();
+        }
         else return "";
     }
 
@@ -82,7 +108,11 @@ public class HttpRequester extends AsyncTask<Void, Void, String> {
 
             con.setRequestMethod(this.method);
             con.setRequestProperty("Accept-Charset","UTF-8");
-            con.setRequestProperty("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+
+            //application/x-www-form-urlencoded은 파라메터 포맷은 똑같고 url에 넣는가 OutputStream으로 쏘는가 차이이다.
+            con.setRequestProperty("Content-type", "application/json; charset=UTF-8");
+
+            Log.d(TAG, "REQUEST BODY:"+strParams);
 
             //GET은 이렇게 파라미터 첨부를 할 수 없음.
             if(!this.method.equals("GET")) {

@@ -8,19 +8,18 @@ import android.view.View;
 import android.widget.Button;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import kr.ac.hanyang.selab.iot_application.R;
 import kr.ac.hanyang.selab.iot_application.controller.DeviceRegistrationController;
-import kr.ac.hanyang.selab.iot_application.presentation.adapter.BluetoothDeviceListAdapter;
+import kr.ac.hanyang.selab.iot_application.presentation.adapter.UnregisteredDeviceListAdapter;
 
 public class DeviceRegistrationActivity extends AppCompatActivity {
 
-    private static final String TAG = "DeviceRegistrationActivity";
+    private static final String TAG = "DevRegistrationActivity";
 
     private RecyclerView listView;
     private RecyclerView.LayoutManager listLayout;
-    private BluetoothDeviceListAdapter listAdapter;
+    private UnregisteredDeviceListAdapter listAdapter;
 
     DeviceRegistrationController con = null;
 
@@ -29,10 +28,10 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_registration);
         setHandlers();
-//        if(con == null)
-//            con = new DeviceRegistrationController(this, listAdapter);
+        if(con == null)
+            con = new DeviceRegistrationController(this, listAdapter);
 
-//        con.listUp();
+        con.listUp();
 
     }
 
@@ -47,12 +46,12 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
         listLayout = new LinearLayoutManager(this);
         listView.setLayoutManager(listLayout);
 
-        listAdapter = new BluetoothDeviceListAdapter(new ArrayList<Map<String, String>>());
+        listAdapter = new UnregisteredDeviceListAdapter(new ArrayList<String>());
         listView.setAdapter(listAdapter);
-        listAdapter.setItemClick(new BluetoothDeviceListAdapter.ItemClick() {
+        listAdapter.setItemClick(new UnregisteredDeviceListAdapter.ItemClick() {
             @Override
             public void onClick(View view, int position) {
-                Map<String, String> device = listAdapter.getBluetoothDevice(position);
+                String device = listAdapter.getDeviceName(position);
 //                con.???(device);
             }
         });

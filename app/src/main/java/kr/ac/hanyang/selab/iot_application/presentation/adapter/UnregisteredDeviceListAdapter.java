@@ -8,13 +8,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Map;
 
 import kr.ac.hanyang.selab.iot_application.R;
 
-public class BluetoothDeviceListAdapter extends RecyclerView.Adapter<BluetoothDeviceListAdapter.ViewHolder> {
+public class UnregisteredDeviceListAdapter extends RecyclerView.Adapter<UnregisteredDeviceListAdapter.ViewHolder> {
 
-    private List<Map<String, String>> dataSet;
+    private List<String> dataSet;
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         public TextView view;
@@ -25,23 +24,23 @@ public class BluetoothDeviceListAdapter extends RecyclerView.Adapter<BluetoothDe
         }
     }
 
-    public BluetoothDeviceListAdapter(List<Map<String, String>> dataSet){
+    public UnregisteredDeviceListAdapter(List<String> dataSet){
         this.dataSet = dataSet;
     }
 
     public void clearAll(){
         dataSet.clear();
     }
-    public void addBluetoothDevice(Map<String, String> blueDevice){
-        dataSet.add(blueDevice);
+    public void addDeviceName(String deviceName){
+        dataSet.add(deviceName);
     }
 
-    public Map<String, String> getBluetoothDevice(int index){
+    public String getDeviceName(int index){
         return dataSet.get(index);
     }
 
     @Override
-    public BluetoothDeviceListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+    public UnregisteredDeviceListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         return new ViewHolder(v);
     }
@@ -57,8 +56,8 @@ public class BluetoothDeviceListAdapter extends RecyclerView.Adapter<BluetoothDe
     @Override
     public void onBindViewHolder(ViewHolder holder, int position){
         final int POSITION = position;
-        Map<String, String> blueDevice = dataSet.get(POSITION);
-        holder.view.setText(blueDevice.get("name") + ":" + blueDevice.get("mac"));
+        String deviceName = dataSet.get(POSITION);
+        holder.view.setText(deviceName);
 
         holder.view.setOnClickListener(new View.OnClickListener(){
             @Override

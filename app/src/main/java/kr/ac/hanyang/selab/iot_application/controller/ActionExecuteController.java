@@ -1,5 +1,6 @@
 package kr.ac.hanyang.selab.iot_application.controller;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,9 +8,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,10 +26,11 @@ import kr.ac.hanyang.selab.iot_application.domain.DeviceAction;
 import kr.ac.hanyang.selab.iot_application.domain.PEP;
 import kr.ac.hanyang.selab.iot_application.presentation.ActionExecuteActivity;
 import kr.ac.hanyang.selab.iot_application.utill.HttpRequester;
+import kr.ac.hanyang.selab.iot_application.utill.DialogUtil;
 
 public class ActionExecuteController {
 
-    private final String TAG = "ActionExecuteController";
+    private final String TAG = "ActionExecCon";
 
     private ActionExecuteActivity activity;
     private List<TextInputLayout> params;
@@ -72,13 +74,27 @@ public class ActionExecuteController {
 
     public void execute(){
 
-        // 실행 결과 통보
+        DialogUtil.getInstance().startProgress(activity);
+
+        // 실행 결과
         httpHandler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+                DialogUtil.getInstance().stopProgress(activity);
+
                 Bundle data = msg.getData();
-                Toast.makeText(activity, data.toString(), Toast.LENGTH_LONG);
+                Log.d(TAG, data.toString());
+                try {
+                    JSONObject json = new JSONObject(data.getString("msg"));
+
+
+                    //TODO: 실행 결과 더 친절하게 알려주기(시간나면)
+                    DialogUtil.showMessage(activity, "PDP Evaluation Result:", json.toString());
+                } catch (JSONException e) {
+                    DialogUtil.showMessage(activity, "Error:", "Error Occurred during get result");
+                    e.printStackTrace();
+                }
             }
         };
 
@@ -89,16 +105,27 @@ public class ActionExecuteController {
 
         ContentValues requestParam = new ContentValues();
 
-        JSONArray paramValues = new JSONArray();
+        JSONArray jsonParams = new JSONArray();
         int size = params.size();
         for(int i=0; i<size; i++) {
-            String param = params.get(i).getEditText().getText().toString();
-            paramValues.put(param);
+            String paramValue = params.get(i).getEditText().getText().toString();
+            String paramName = action.getParams().get(i).get("name");
+            String paramType = action.getParams().get(i).get("type");
+
+            JSONObject jsonParam = new JSONObject();
+            try {
+                jsonParam.put("name", paramName);
+                jsonParam.put("type", paramType);
+                jsonParam.put("value", paramValue);
+                jsonParams.put(jsonParam);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
-        requestParam.put("userId", Login.getId());
-        requestParam.put("action", action.getActionName());
-        requestParam.put("params", paramValues.toString());
+        requestParam.put("actionName", action.getActionName());
+        requestParam.put("actionId", action.getActionId());
+        requestParam.put("params", jsonParams.toString());
 
         PEP pep = (PEP) intent.getSerializableExtra("pep");
 

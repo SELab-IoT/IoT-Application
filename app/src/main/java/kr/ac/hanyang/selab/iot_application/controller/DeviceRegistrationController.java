@@ -5,29 +5,32 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import kr.ac.hanyang.selab.iot_application.domain.Device;
 import kr.ac.hanyang.selab.iot_application.domain.PEP;
-import kr.ac.hanyang.selab.iot_application.presentation.DeviceListActivity;
-import kr.ac.hanyang.selab.iot_application.presentation.adapter.DeviceListAdapter;
+import kr.ac.hanyang.selab.iot_application.presentation.DeviceRegistrationActivity;
+import kr.ac.hanyang.selab.iot_application.presentation.adapter.UnregisteredDeviceListAdapter;
 import kr.ac.hanyang.selab.iot_application.utill.HttpRequester;
+import kr.ac.hanyang.selab.iot_application.utill.DialogUtil;
 
 public class DeviceRegistrationController {
-/*
-    private final String TAG = "UnregisteredDevListCon";
 
-    private String pepIP;
+    private final String TAG = "DevRegistrationCon";
 
-    private DeviceListActivity activity;
-    private DeviceListAdapter listAdapter;
+    private DeviceRegistrationActivity activity;
+    private UnregisteredDeviceListAdapter listAdapter;
     private Handler httpHandler;
 
-    public DeviceRegistrationController(DeviceListActivity activity, DeviceListAdapter adapter){
+    public DeviceRegistrationController(DeviceRegistrationActivity activity, UnregisteredDeviceListAdapter adapter){
         this.activity = activity;
         this.listAdapter = adapter;
-        this.pepIP = activity.getIntent().getStringExtra("pepIP");
     }
 
     public void listUp(){
+
+        DialogUtil.getInstance().startProgress(activity);
 
         httpHandler = new Handler(){
             @Override
@@ -35,29 +38,38 @@ public class DeviceRegistrationController {
                 super.handleMessage(msg);
                 Log.d(TAG, msg.toString());
                 Bundle data = msg.getData();
-                String profile = data.getString("msg");
-                if(profile != null) {
-                    // Handle JSONArray (device id list)
+                String deviceList = data.getString("msg");
+                if(deviceList != null) {
+                    try {
+                        JSONArray names = new JSONArray(deviceList);
+                        int len = names.length();
+                        for(int i=0; i<len; i++)
+                            addDeviceNameToList(names.getString(i));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    DialogUtil.getInstance().stopProgress(activity);
                 } else {
                     Log.e(TAG, "No Response");
                 }
             }
         };
 
-        String url = pep.getIp() + "profile/frebern";
+        PEP pep = (PEP) activity.getIntent().getSerializableExtra("pep");
+
+        String url = "http://" + pep.getIp() + "/devices/scan";
         String method = "GET";
         HttpRequester http = new HttpRequester(httpHandler, url, method, null);
         http.execute();
 
     }
 
-    private void addDeviceToList(Device device) {
-        listAdapter.addDevice(device);
+    private void addDeviceNameToList(String deviceName) {
+        listAdapter.addDeviceName(deviceName);
         listAdapter.notifyDataSetChanged();
     }
 
     public void requestDeviceRegistration(Device device) {
     }
 
-    */
 }

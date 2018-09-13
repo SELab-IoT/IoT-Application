@@ -17,6 +17,7 @@ import java.util.Set;
 import kr.ac.hanyang.selab.iot_application.presentation.PEPRegistrationActivity;
 import kr.ac.hanyang.selab.iot_application.presentation.adapter.BluetoothPEPListAdapter;
 import kr.ac.hanyang.selab.iot_application.utill.BluetoothService;
+import kr.ac.hanyang.selab.iot_application.utill.DialogUtil;
 
 public class PEPRegistrationController {
 
@@ -34,6 +35,7 @@ public class PEPRegistrationController {
     public PEPRegistrationController(final PEPRegistrationActivity activity, BluetoothPEPListAdapter adapter){
         this.activity = activity;
         this.listAdapter = adapter;
+
         this.blueHandler = new Handler(){
             public void handleMessage(Message msg){
 
@@ -42,18 +44,23 @@ public class PEPRegistrationController {
                 bluetooth.closeAll();
 
                 try {
+
                     JSONObject json = new JSONObject(msg.getData().getString("msg"));
-                    JSONObject profile = json.getJSONObject("profile");
-                    String pepID = profile.getString("pepID");
-                    String pepIP = profile.getString("pepIP");
+
+                    DialogUtil.getInstance().stopProgress(activity);
+                    DialogUtil.showMessage(activity, "PEP Info:", json.toString() +"\n이 이후 단계(PEP 등록 단계)는 차후 개발");
 
                     // TODO: 가져온 PEP 프로필로 등록절차 진행.
+                    JSONObject profile = json.getJSONObject("profile");
+                    String pepId = profile.getString("pepId");
+                    String pepIp = profile.getString("pepIp");
 
 
                 } catch (JSONException e) {
+                    DialogUtil.getInstance().stopProgress(activity);
+                    DialogUtil.showMessage(activity, "ERROR:","Error Occurred during get PEP profile...");
                     e.printStackTrace();
                 }
-
             }
         };
         if(bluetooth == null)
@@ -61,7 +68,8 @@ public class PEPRegistrationController {
     }
 
     public void listUp(){
-        Log.d(TAG, "Connect");
+        Log.d(TAG, "listUp");
+
         pepList = bluetooth.getPairedDevices();
 
         listAdapter.clearAll();
@@ -97,6 +105,8 @@ public class PEPRegistrationController {
     }
 
     public void connect(Map<String, String> pep) {
+        DialogUtil.getInstance().startProgress(activity);
+
         // 맥 주소로 연결 후, 쓰레드를 통해 메시지 읽기 대기.
         String mac = pep.get("mac");
         BluetoothDevice bluePEP = findPepByMac(mac);

@@ -25,4 +25,5 @@ public class MainMenuController {
         Intent intent = new Intent(ctx, PolicyEditorActivity.class);
         ctx.startActivity(intent);
     }
+
 }
