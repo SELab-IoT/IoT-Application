@@ -1,6 +1,5 @@
 package kr.ac.hanyang.selab.iot_application.controller;
 
-import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,8 +24,10 @@ import kr.ac.hanyang.selab.iot_application.domain.Device;
 import kr.ac.hanyang.selab.iot_application.domain.DeviceAction;
 import kr.ac.hanyang.selab.iot_application.domain.PEP;
 import kr.ac.hanyang.selab.iot_application.presentation.ActionExecuteActivity;
-import kr.ac.hanyang.selab.iot_application.utill.HttpRequester;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpRequestFactory;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpRequester;
 import kr.ac.hanyang.selab.iot_application.utill.DialogUtil;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpRequest;
 
 public class ActionExecuteController {
 
@@ -133,7 +134,8 @@ public class ActionExecuteController {
         String pepIp = pep.getIp();
         String url =  "http://" + pepIp + "/devices/" + deviceId;
         String method = "POST";
-        HttpRequester http = new HttpRequester(httpHandler, url, method, requestParam);
+        HttpRequest request = HttpRequestFactory.getInstance().create(httpHandler, url, method, requestParam, true);
+        HttpRequester http = new HttpRequester(request);
         http.execute();
 
     }

@@ -12,8 +12,10 @@ import kr.ac.hanyang.selab.iot_application.domain.Device;
 import kr.ac.hanyang.selab.iot_application.domain.PEP;
 import kr.ac.hanyang.selab.iot_application.presentation.DeviceRegistrationActivity;
 import kr.ac.hanyang.selab.iot_application.presentation.adapter.UnregisteredDeviceListAdapter;
-import kr.ac.hanyang.selab.iot_application.utill.HttpRequester;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpRequestFactory;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpRequester;
 import kr.ac.hanyang.selab.iot_application.utill.DialogUtil;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpRequest;
 
 public class DeviceRegistrationController {
 
@@ -64,7 +66,8 @@ public class DeviceRegistrationController {
 
         String url = "http://" + pep.getIp() + "/devices/scan";
         String method = "GET";
-        HttpRequester http = new HttpRequester(httpHandler, url, method, null);
+        HttpRequest request = HttpRequestFactory.getInstance().create(httpHandler, url, method, null, false);
+        HttpRequester http = new HttpRequester(request);
         http.execute();
 
     }
@@ -74,7 +77,8 @@ public class DeviceRegistrationController {
         listAdapter.notifyDataSetChanged();
     }
 
-    public void requestDeviceRegistration(Device device) {
+    public void requestDeviceRegistration(String device) {
+
     }
 
 }

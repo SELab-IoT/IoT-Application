@@ -1,14 +1,6 @@
 package kr.ac.hanyang.selab.iot_application.controller;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -17,7 +9,6 @@ import kr.ac.hanyang.selab.iot_application.domain.PEP;
 import kr.ac.hanyang.selab.iot_application.presentation.ActionListActivity;
 import kr.ac.hanyang.selab.iot_application.presentation.DeviceListActivity;
 import kr.ac.hanyang.selab.iot_application.presentation.adapter.DeviceListAdapter;
-import kr.ac.hanyang.selab.iot_application.utill.HttpRequester;
 
 public class DeviceListController {
 
