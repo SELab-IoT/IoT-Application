@@ -88,10 +88,22 @@ public class ActionExecuteController {
                 Log.d(TAG, data.toString());
                 try {
                     JSONObject json = new JSONObject(data.getString("msg"));
+                    //{"advices":[],"decision":true,"success":true}
+                    try {
+                        boolean decision = json.getBoolean("decision");
+                        boolean success = json.getBoolean("success");
+                        String resultMsg;
+                        resultMsg = "Policy Evaluation : "+ (decision ? "Permit" : "Deny(or NA/Ind)") + "\n";
+                        resultMsg += "Device Operate Success? : " + success;
+                        //resultMsg += advices
 
+                        //TODO: 실행 결과 더 친절하게 알려주기(시간나면)
+                        DialogUtil.showMessage(activity, "PDP Evaluation Result:", resultMsg);
 
-                    //TODO: 실행 결과 더 친절하게 알려주기(시간나면)
-                    DialogUtil.showMessage(activity, "PDP Evaluation Result:", json.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
                 } catch (JSONException e) {
                     DialogUtil.showMessage(activity, "Error:", "Error Occurred during get result");
                     e.printStackTrace();
@@ -124,6 +136,8 @@ public class ActionExecuteController {
             }
         }
 
+        requestParam.put("deviceName", device.getDeviceName());
+        requestParam.put("macAddress", device.getMacAddress());
         requestParam.put("actionName", action.getActionName());
         requestParam.put("actionId", action.getActionId());
         requestParam.put("params", jsonParams.toString());

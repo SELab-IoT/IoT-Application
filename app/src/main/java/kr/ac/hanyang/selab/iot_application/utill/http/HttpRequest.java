@@ -1,6 +1,7 @@
 package kr.ac.hanyang.selab.iot_application.utill.http;
 import android.os.Handler;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class HttpRequest {
@@ -14,6 +15,17 @@ public class HttpRequest {
         this.method = method;
         this.handler = handler;
         this.params = params;
+    }
+
+    public HttpRequest(Handler handler, String url, String method, String params){
+        try {
+            this.url = new URL(url);
+            this.method = method;
+            this.handler = handler;
+            this.params = params;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
 
     public URL getUrl() {

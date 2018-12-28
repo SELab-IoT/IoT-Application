@@ -37,7 +37,7 @@ public class PEPListController {
         this.listAdapter = adapter;
     }
 
-    //For testing... one pep group.
+    //테스팅을 위해 PEP Group을 선택하는건 스킵하고 모든 그룹의 PEP를 한 목록으로 띄움.
     public void listUp(){
 
         DialogUtil.getInstance().startProgress(activity);
@@ -63,7 +63,6 @@ public class PEPListController {
                                 addPEPToList(pep);
                             }
                         }
-
                     } catch (JSONException e) {
                         Log.e(TAG, "JSONException on query profile",e);
                     }
@@ -76,10 +75,8 @@ public class PEPListController {
 
         listAdapter.clearAll();
 
-        // TODO: 여기 나중에 POST로 고치고 플랫폼매니저에서는 세션키든 패스워드든 사용해서 검증시킬 것.
-        // GET이면 userId만 알면 아무나 다 PEP 목록 볼 수 있자너...
-        String url = HttpUtil.PLATFORM_MANAGER + "pep-group/profile/" + Login.getId();
-        String method = "GET";
+        String url = HttpUtil.PLATFORM_MANAGER + "pep-group/profile/";
+        String method = "POST";
         HttpRequest request = HttpRequestFactory.getInstance().create(httpHandler, url, method, null, true);
         HttpRequester http = new HttpRequester(request);
         http.execute();

@@ -12,6 +12,7 @@ public class Device implements Serializable {
 
     private String deviceId;
     private String deviceName;
+    private String macAddress;
     private List<DeviceAction> actions;
 
     public Device(JSONObject device) {
@@ -20,6 +21,7 @@ public class Device implements Serializable {
         try {
             deviceId = device.getString("deviceId");
             deviceName = device.getString("deviceName");
+            macAddress = device.getString("macAddress");
             JSONArray actions = device.getJSONArray("actions");
             int len = actions.length();
             for(int i=0;i<len;i++){
@@ -43,6 +45,8 @@ public class Device implements Serializable {
     public String getDeviceName() {
         return deviceName;
     }
+
+    public String getMacAddress() { return macAddress; }
 
     public List<DeviceAction> getActions() {
         return actions;

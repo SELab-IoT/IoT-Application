@@ -1,21 +1,68 @@
 package kr.ac.hanyang.selab.iot_application.controller;
 
-// TODO: 시간나면 Singleton으로
+import android.content.ContentValues;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import kr.ac.hanyang.selab.iot_application.utill.Hash;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpRequest;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpRequestFactory;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpRequester;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpUtil;
+
 public class Login {
 
-    //Maybe Temporal
+    private static final String TAG = "Login";
+
+    //Temporal
     private static String id="frebern";
-    private static String pwd="selab10T";
+    private static String pwd="passwd";
+
     private static String sessionKey;
 
     //Temporal
     public static boolean autoLogin(){
-        return login(Login.id, Login.pwd);
+        return login(id, pwd);
     }
 
     public static boolean login(String id, String pwd){
-        //TODO : PlatformManager 로그인 구현 후 로그인 요청해서 세션키 받아오기.
-        sessionKey="sessionKey";
+
+        Handler handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                try {
+                    JSONObject json = new JSONObject(msg.getData().getString("msg"));
+                    sessionKey = json.getString("sessionKey");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        String hashed = Hash.SHA3_256(pwd);
+
+        String url = "http://" + HttpUtil.PLATFORM_MANAGER + "/login";
+        String method = "POST";
+        ContentValues params = new ContentValues();
+        JSONObject bundle = new JSONObject();
+        try {
+            bundle.put("userId", id);
+            bundle.put("userPW", hashed);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        params.put("deviceList", bundle.toString());
+        HttpRequest request = HttpRequestFactory.getInstance().create(handler, url, method, params, false);
+        HttpRequester http = new HttpRequester(request);
+        http.execute();
+
         return true;
     }
 

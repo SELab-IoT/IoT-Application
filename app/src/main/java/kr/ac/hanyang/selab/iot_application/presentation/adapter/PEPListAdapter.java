@@ -60,7 +60,7 @@ public class PEPListAdapter extends RecyclerView.Adapter<PEPListAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, int position){
         final int POSITION = position;
         PEP pep = dataSet.get(POSITION);
-        holder.view.setText(pep.getIp());
+        holder.view.setText(pep.getId() + ": " + pep.getIp());
 
         holder.view.setOnClickListener(new View.OnClickListener(){
             @Override

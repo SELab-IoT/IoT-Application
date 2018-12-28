@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import kr.ac.hanyang.selab.iot_application.R;
 import kr.ac.hanyang.selab.iot_application.controller.DeviceRegistrationController;
@@ -52,7 +53,11 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int position) {
                 String device = listAdapter.getDeviceName(position);
-//                con.???(device);
+
+                List<String> connectList = new ArrayList();
+                connectList.add(device);
+                con.requestDevicesRegistration(connectList);
+
             }
         });
 

@@ -8,6 +8,7 @@ import java.net.URL;
 
 import kr.ac.hanyang.selab.iot_application.controller.Login;
 
+// 아마 userInfo 때문에 만들었던것 같은데 더 좋은 방법으로 리팩토링 할 수 있을 듯
 public class HttpRequestFactory {
 
     private static final HttpRequestFactory instance = new HttpRequestFactory();
@@ -27,30 +28,32 @@ public class HttpRequestFactory {
             params.put("userId", userId);
             params.put("sessionKey", sessionKey);
         }
-
-        try {
-
-            if(method.equalsIgnoreCase("GET"))
-                return createGETRequest(handler, url, method, params);
-            else if(method.equalsIgnoreCase("POST"))
-                return createPOSTRequest(handler, url, method, params);
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
+        if(method.equalsIgnoreCase("GET"))
+            return createGETRequest(handler, url, params);
+        else if(method.equalsIgnoreCase("POST"))
+            return createPOSTRequest(handler, url, params);
         return null;
     }
 
-    public HttpRequest createGETRequest(Handler handler, String strUrl, String method, ContentValues params) throws MalformedURLException {
+    public HttpRequest createGETRequest(Handler handler, String strUrl, ContentValues params){
         String strParams = HttpUtil.toGETParameterForm(params);
-        URL url = new URL(strUrl + "?" + strParams);
-        return new HttpRequest(handler, url, method, strParams);
+        URL url = null;
+        try {
+            url = new URL(strUrl + "?" + strParams);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return new HttpRequest(handler, url, "GET", strParams);
     }
 
-    public HttpRequest createPOSTRequest(Handler handler, String strUrl, String method, ContentValues params) throws MalformedURLException {
+    public HttpRequest createPOSTRequest(Handler handler, String strUrl, ContentValues params){
         String strParams = HttpUtil.toPOSTParameterForm(params);
-        URL url = new URL(strUrl);
-        return new HttpRequest(handler, url, method, strParams);
+        URL url = null;
+        try {
+            url = new URL(strUrl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return new HttpRequest(handler, url, "POST", strParams);
     }
 }

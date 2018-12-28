@@ -1,7 +1,12 @@
 package kr.ac.hanyang.selab.iot_application.utill.http;
 
 import android.content.ContentValues;
+import android.util.JsonReader;
+import android.util.Log;
 
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,6 +17,8 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 public class HttpUtil {
+
+    private static final String TAG = "HttpUtil";
 
     public static final String PLATFORM_MANAGER = "http://selab.hanyang.ac.kr:8080/";
 
@@ -41,9 +48,32 @@ public class HttpUtil {
         if(params != null) {
             for(Map.Entry<String, Object> param : params.valueSet()){
                 String key = param.getKey();
-                Object value = param.getValue();
+                String value = param.getValue().toString();
+                boolean isJsonObj = true;
+                boolean isJsonArr = true;
+
+                // 값이 JSONObject인지 JSONArray인지 둘 다 아닌지 테스트
+                // params를 ContentValue로 받기 때문에 생기는 문제
+                try{
+                    new JSONObject(value);
+                } catch (JSONException e) {
+                    isJsonObj = false;
+                } try{
+                    new JSONArray(value);
+                } catch (JSONException e) {
+                    isJsonArr = false;
+                }
+
                 try {
-                    ps.put(key, value);
+                    if(isJsonArr) {
+                        JSONArray jarr = new JSONArray(value);
+                        ps.put(key, jarr);
+                    }else if(isJsonObj){
+                        JSONObject jobj = new JSONObject(value);
+                        ps.put(key, jobj);
+                    }else {
+                        ps.put(key, value);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

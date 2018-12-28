@@ -26,7 +26,9 @@
         <activity android:name=".presentation.ActionListActivity" />
         <activity android:name=".presentation.ActionExecuteActivity" />
         <activity android:name=".presentation.PEPListActivity" />
-        <activity android:name=".presentation.DeviceRegistrationActivity"></activity>
+        <activity android:name=".presentation.DeviceRegistrationActivity" />
+        <activity android:name=".presentation.NewPEPGroupActivity" />
+        <activity android:name=".presentation.PEPGroupListActivity"></activity>
     </application>
 
 </manifest>

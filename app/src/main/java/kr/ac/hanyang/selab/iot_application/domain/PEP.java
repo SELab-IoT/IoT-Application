@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PEP implements Serializable {
+    private String pepId;
+    private String pepName;
     private String ip;
     private List<Device> devices;
 
@@ -19,6 +21,8 @@ public class PEP implements Serializable {
         devices.clear();
 
         try {
+            pepId = pep.getString("pepId");
+            pepName = pep.getString("pepName");
             ip = pep.getString("ip");
             JSONArray jsonDevices = pep.getJSONArray("deviceProfiles");
             int len = jsonDevices.length();
@@ -33,6 +37,10 @@ public class PEP implements Serializable {
 
     }
 
+    public String getId() {
+        return pepId;
+    }
+
     public String getIp() {
         return ip;
     }
@@ -40,4 +48,5 @@ public class PEP implements Serializable {
     public List<Device> getDevices() {
         return devices;
     }
+
 }

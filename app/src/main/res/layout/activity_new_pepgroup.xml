@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".presentation.NewPEPGroupActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="새 PEP 그룹 생성"
+        android:textSize="24sp"/>
+
+    <EditText
+        android:id="@+id/input_group_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="PEP Group Name" />
+
+    <EditText
+        android:id="@+id/input_group_pw"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password for PEP Group"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/btn_create_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="새 PEP 그룹을 생성하고 PEP 등록" />
+
+
+</LinearLayout>

@@ -1,6 +1,10 @@
 package kr.ac.hanyang.selab.iot_application.controller;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
+import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -14,10 +18,19 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import kr.ac.hanyang.selab.iot_application.R;
+import kr.ac.hanyang.selab.iot_application.domain.PEP;
+import kr.ac.hanyang.selab.iot_application.presentation.NewPEPGroupActivity;
+import kr.ac.hanyang.selab.iot_application.presentation.PEPGroupListActivity;
 import kr.ac.hanyang.selab.iot_application.presentation.PEPRegistrationActivity;
 import kr.ac.hanyang.selab.iot_application.presentation.adapter.BluetoothPEPListAdapter;
 import kr.ac.hanyang.selab.iot_application.utill.BluetoothService;
 import kr.ac.hanyang.selab.iot_application.utill.DialogUtil;
+import kr.ac.hanyang.selab.iot_application.utill.Hash;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpRequest;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpRequestFactory;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpRequester;
+import kr.ac.hanyang.selab.iot_application.utill.http.HttpUtil;
 
 public class PEPRegistrationController {
 
@@ -50,11 +63,8 @@ public class PEPRegistrationController {
                     DialogUtil.getInstance().stopProgress(activity);
                     DialogUtil.showMessage(activity, "PEP Info:", json.toString() +"\n이 이후 단계(PEP 등록 단계)는 차후 개발");
 
-                    // TODO: 가져온 PEP 프로필로 등록절차 진행.
-                    JSONObject profile = json.getJSONObject("profile");
-                    String pepId = profile.getString("pepId");
-                    String pepIp = profile.getString("pepIp");
-
+                    JSONObject pepProfile = json.getJSONObject("profile");
+                    registerPEP(pepProfile);
 
                 } catch (JSONException e) {
                     DialogUtil.getInstance().stopProgress(activity);
@@ -66,6 +76,122 @@ public class PEPRegistrationController {
         if(bluetooth == null)
             bluetooth = new BluetoothService(blueHandler);
     }
+
+    private void registerPEP(JSONObject pepProfile){
+        // Step 5. PEP Group 조회 ~ Step 6. PEPGroup 반환
+        Handler handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                //Step 6. 반환받은 메시지따라 7a, 7b 선택해서 처리.
+                try {
+                    JSONObject json = new JSONObject(msg.getData().getString("msg"));
+                    boolean hasGroup = json.getBoolean("hasGroup");
+                    if(hasGroup){
+                        // PEP가 속한 PEPGroup이 있는 경우 (7.b)
+                        addUserToPEPGroup(json.getLong("pepGroupId"));
+                    }else{
+                        // PEP가 속한 PEPGroup이 없는 경우 (7.a)
+                        addPEPtoPEPGroup(pepProfile.toString());
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        String userId = Login.getId();
+        String pepId = null;
+        try {
+            pepId = pepProfile.getString("pepId");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            DialogUtil.showMessage(activity, "Error Occurred!", "No PEP ID in pepProfile (PEPRegistrationController.java)");
+        }
+        String url = HttpUtil.PLATFORM_MANAGER+"groups/"+userId+"/"+pepId;
+        HttpRequest request = HttpRequestFactory.getInstance().createGETRequest(handler, url, null);
+        new HttpRequester(request).execute();
+    }
+
+    //Step 7.a. PEP가 포함된 PEP Group이 없는 경우 ... 즉, PEP 자체도 아직 PM에 없음.
+    private void addPEPtoPEPGroup(String pepProfile){
+        // 다이얼로그 보여줘서 선택지 2개 보여준 후 선택지 따라 액티비티 전환하기.
+        // 7.a.1. 새 그룹 생성하기
+        // 7.a.2. 기존 그룹에 추가하기.
+        final CharSequence[] arr = {"새 그룹 생성하기", "기존 그룹에 추가하기"};
+        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+        alert.setIcon(R.drawable.ic_launcher_background);
+        alert.setTitle("이 PEP 를...");
+        alert.setSingleChoiceItems(arr, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                Class<?> nextActivity = (i == 0) ? NewPEPGroupActivity.class
+                        : PEPGroupListActivity.class ;
+
+                Intent intent = new Intent(activity, nextActivity);
+                intent.putExtra("pepProfile", pepProfile);
+                activity.startActivity(intent);
+                dialog.cancel();
+            }
+        });
+        alert.create().show();
+
+    }
+
+    //Step 7.b. PEP가 포함된 PEP Group이 있는 경우
+    private void addUserToPEPGroup(long pepGroupId){
+        // 유저를 해당 PEP Group에 등록
+        // 적합한 유저는 PEP Group의 패스워드를 이미 알고있다고 가정한다.
+        Handler onOk = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                // 유저 등록 요청
+                String userId = Login.getId();
+                String pepGroupPW = msg.getData().getString("pepGroupPW");
+                requestAddUserToPEPGroup(userId, pepGroupId, pepGroupPW);
+            }
+        };
+        Handler onCancel = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                // 아무 일도 하지말고 그저 평온한 하루를 보냅시다.
+            }
+        };
+        DialogUtil.getInstance().showPasswordPrompt(activity, onOk, onCancel);
+    }
+
+    private void requestAddUserToPEPGroup(String userId, long pepGroupId, String pepGroupPW){
+
+        Handler handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                try {
+                    JSONObject json = new JSONObject(msg.getData().getString("msg"));
+                    boolean success = json.getBoolean("success");
+                    if(success){
+                        DialogUtil.showMessage(activity, "유저 등록 성공!", "PEP Group 가입에 성공했습니다!");
+                    } else {
+                        DialogUtil.showMessage(activity, "유저 등록 실패!", "Reason : "+json.getString("reason"));
+                        addUserToPEPGroup(pepGroupId); //그룹 패스워드 다시 입력 받기
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        String url = HttpUtil.PLATFORM_MANAGER + "groups";
+        String hashed = Hash.SHA3_256(pepGroupPW);
+        ContentValues params = new ContentValues();
+        params.put("userId", userId);
+        params.put("pepGroupId", pepGroupId);
+        params.put("pepGroupPW", hashed);
+        HttpRequest request = HttpRequestFactory.getInstance().createPOSTRequest(handler, url, params);
+        new HttpRequester(request).execute();
+    }
+
 
     public void listUp(){
         Log.d(TAG, "listUp");
