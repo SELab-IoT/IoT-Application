@@ -1,5 +1,6 @@
 package kr.ac.hanyang.selab.iot_application.controller;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.ContentValues;
@@ -42,34 +43,26 @@ public class PEPRegistrationController {
     private Set<BluetoothDevice> pepList = new HashSet<>();
 
     //여기 커플링 정말 싫다... 나중에 정말 시간 남으면 리팩토링 시도
-    private PEPRegistrationActivity activity;
+    private Activity activity;
     private BluetoothPEPListAdapter listAdapter;
 
-    public PEPRegistrationController(final PEPRegistrationActivity activity, BluetoothPEPListAdapter adapter){
+    public PEPRegistrationController(final Activity activity, BluetoothPEPListAdapter adapter){
         this.activity = activity;
         this.listAdapter = adapter;
 
         this.blueHandler = new Handler(){
             public void handleMessage(Message msg){
-
                 super.handleMessage(msg);
-                Log.d(TAG, "handle Message : "+msg);
+                Log.d(TAG, "Selected PEP Profile : "+msg);
                 bluetooth.closeAll();
-
                 try {
-
                     JSONObject json = new JSONObject(msg.getData().getString("msg"));
-
-                    DialogUtil.getInstance().stopProgress(activity);
-                    DialogUtil.showMessage(activity, "PEP Info:", json.toString() +"\n이 이후 단계(PEP 등록 단계)는 차후 개발");
-
+//                    DialogUtil.showMessage(activity, "선택한 PEP Profile:", json.toString());
                     JSONObject pepProfile = json.getJSONObject("profile");
                     registerPEP(pepProfile);
-
                 } catch (JSONException e) {
-                    DialogUtil.getInstance().stopProgress(activity);
-                    DialogUtil.showMessage(activity, "ERROR:","Error Occurred during get PEP profile...");
-                    e.printStackTrace();
+                    DialogUtil.showMessage(activity, "ERROR!","PEP가 아닙니다!");
+                    // 혹은 전원 혹은 블루투스가 꺼져있습니다. - 이건 여기가 아닐 듯.
                 }
             }
         };
@@ -86,14 +79,13 @@ public class PEPRegistrationController {
                 //Step 6. 반환받은 메시지따라 7a, 7b 선택해서 처리.
                 try {
                     JSONObject json = new JSONObject(msg.getData().getString("msg"));
+
                     boolean hasGroup = json.getBoolean("hasGroup");
-                    if(hasGroup){
-                        // PEP가 속한 PEPGroup이 있는 경우 (7.b)
+                    if(hasGroup) // PEP가 속한 PEPGroup이 있는 경우 (7.b)
                         addUserToPEPGroup(json.getLong("pepGroupId"));
-                    }else{
-                        // PEP가 속한 PEPGroup이 없는 경우 (7.a)
+                    else // PEP가 속한 PEPGroup이 없는 경우 (7.a)
                         addPEPtoPEPGroup(pepProfile.toString());
-                    }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -104,8 +96,9 @@ public class PEPRegistrationController {
         try {
             pepId = pepProfile.getString("pepId");
         } catch (JSONException e) {
+            DialogUtil.showMessage(activity, "Error!", "잘못된 PEP 프로필 입니다!(No PEP ID in pepProfile)");
             e.printStackTrace();
-            DialogUtil.showMessage(activity, "Error Occurred!", "No PEP ID in pepProfile (PEPRegistrationController.java)");
+            return;
         }
         String url = HttpUtil.PLATFORM_MANAGER+"groups/"+userId+"/"+pepId;
         HttpRequest request = HttpRequestFactory.getInstance().createGETRequest(handler, url, null);
@@ -151,13 +144,7 @@ public class PEPRegistrationController {
                 requestAddUserToPEPGroup(userId, pepGroupId, pepGroupPW);
             }
         };
-        Handler onCancel = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                // 아무 일도 하지말고 그저 평온한 하루를 보냅시다.
-            }
-        };
+        Handler onCancel = new Handler();
         DialogUtil.getInstance().showPasswordPrompt(activity, onOk, onCancel);
     }
 
@@ -193,6 +180,7 @@ public class PEPRegistrationController {
     }
 
 
+    // 휴대폰 주변 블루투스 페어링 된 기기 전부 검색
     public void listUp(){
         Log.d(TAG, "listUp");
 
@@ -231,7 +219,7 @@ public class PEPRegistrationController {
     }
 
     public void connect(Map<String, String> pep) {
-        DialogUtil.getInstance().startProgress(activity);
+//        DialogUtil.getInstance().startProgress(activity);
 
         // 맥 주소로 연결 후, 쓰레드를 통해 메시지 읽기 대기.
         String mac = pep.get("mac");

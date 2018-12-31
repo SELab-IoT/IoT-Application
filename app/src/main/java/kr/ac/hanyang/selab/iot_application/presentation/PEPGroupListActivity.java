@@ -38,7 +38,7 @@ public class PEPGroupListActivity extends AppCompatActivity {
 
     private void setHandlers(){
 
-        listView = findViewById(R.id.pep_list);
+        listView = findViewById(R.id.user_pep_grouplist);
         listView.setHasFixedSize(true);
 
         listLayout = new LinearLayoutManager(this);

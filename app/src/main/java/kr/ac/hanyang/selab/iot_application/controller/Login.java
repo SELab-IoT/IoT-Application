@@ -47,18 +47,11 @@ public class Login {
 
         String hashed = Hash.SHA3_256(pwd);
 
-        String url = "http://" + HttpUtil.PLATFORM_MANAGER + "/login";
+        String url = HttpUtil.PLATFORM_MANAGER + "login";
         String method = "POST";
         ContentValues params = new ContentValues();
-        JSONObject bundle = new JSONObject();
-        try {
-            bundle.put("userId", id);
-            bundle.put("userPW", hashed);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        params.put("deviceList", bundle.toString());
+        params.put("userId", id);
+        params.put("userPW", hashed);
         HttpRequest request = HttpRequestFactory.getInstance().create(handler, url, method, params, false);
         HttpRequester http = new HttpRequester(request);
         http.execute();
