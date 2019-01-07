@@ -13,6 +13,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,10 +21,8 @@ import java.util.Map;
 import java.util.Set;
 
 import kr.ac.hanyang.selab.iot_application.R;
-import kr.ac.hanyang.selab.iot_application.domain.PEP;
 import kr.ac.hanyang.selab.iot_application.presentation.NewPEPGroupActivity;
 import kr.ac.hanyang.selab.iot_application.presentation.PEPGroupListActivity;
-import kr.ac.hanyang.selab.iot_application.presentation.PEPRegistrationActivity;
 import kr.ac.hanyang.selab.iot_application.presentation.adapter.BluetoothPEPListAdapter;
 import kr.ac.hanyang.selab.iot_application.utill.BluetoothService;
 import kr.ac.hanyang.selab.iot_application.utill.DialogUtil;
@@ -46,7 +45,7 @@ public class PEPRegistrationController {
     private Activity activity;
     private BluetoothPEPListAdapter listAdapter;
 
-    public PEPRegistrationController(final Activity activity, BluetoothPEPListAdapter adapter){
+    public PEPRegistrationController(Activity activity, BluetoothPEPListAdapter adapter){
         this.activity = activity;
         this.listAdapter = adapter;
 
@@ -54,16 +53,16 @@ public class PEPRegistrationController {
             public void handleMessage(Message msg){
                 super.handleMessage(msg);
                 Log.d(TAG, "Selected PEP Profile : "+msg);
-                bluetooth.closeAll();
+                disconnect();
                 try {
                     JSONObject json = new JSONObject(msg.getData().getString("msg"));
 //                    DialogUtil.showMessage(activity, "선택한 PEP Profile:", json.toString());
                     JSONObject pepProfile = json.getJSONObject("profile");
                     registerPEP(pepProfile);
                 } catch (JSONException e) {
-                    DialogUtil.showMessage(activity, "ERROR!","PEP가 아닙니다!");
-                    // 혹은 전원 혹은 블루투스가 꺼져있습니다. - 이건 여기가 아닐 듯.
+                    DialogUtil.showMessage(activity, "Error Occurred!","잘못된 형식의 PEP Profile 입니다.");
                 }
+                DialogUtil.getInstance().stopProgress();
             }
         };
         if(bluetooth == null)
@@ -218,18 +217,26 @@ public class PEPRegistrationController {
         listAdapter.addBluetoothDevice(profile);
     }
 
-    public void connect(Map<String, String> pep) {
-//        DialogUtil.getInstance().startProgress(activity);
+    public void connect(Map<String, String> pep){
+        try {
+            // 맥 주소로 연결 후, 쓰레드를 통해 메시지 읽기 대기.
+            Log.d(TAG, "Get MAC Address");
+            String mac = pep.get("mac");
+            BluetoothDevice bluePEP = findPepByMac(mac);
 
-        // 맥 주소로 연결 후, 쓰레드를 통해 메시지 읽기 대기.
-        String mac = pep.get("mac");
-        BluetoothDevice bluePEP = findPepByMac(mac);
+            // 페어링 이후 연결
+            Log.d(TAG, "Connect");
+            bluetooth.connect(bluePEP);
 
-        // 페어링 이후 연결
-        bluetooth.connect(bluePEP);
-
-        // Profile 요청 - 읽기 대기중인 핸들러에서 Profile 읽을 것임.
-        bluetooth.send("profile");
+            // Profile 요청 - 읽기 대기중인 핸들러에서 Profile 읽을 것임(생성자 참조).
+            Log.d(TAG, "Get PEP Profile");
+            bluetooth.send("profile");
+        } catch (IOException e){
+            Log.e(TAG, "connect()");
+            e.printStackTrace();
+            DialogUtil.getInstance().stopProgress();
+            DialogUtil.showMessage(activity, "Error Occurred!", "전원 혹은 블루투스가 꺼져있거나, PEP가 아닙니다.");
+        }
     }
 
 }

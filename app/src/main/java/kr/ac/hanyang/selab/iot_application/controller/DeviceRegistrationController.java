@@ -1,18 +1,15 @@
 package kr.ac.hanyang.selab.iot_application.controller;
 
 import android.content.ContentValues;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
 
-import kr.ac.hanyang.selab.iot_application.domain.Device;
 import kr.ac.hanyang.selab.iot_application.domain.PEP;
 import kr.ac.hanyang.selab.iot_application.presentation.DeviceRegistrationActivity;
 import kr.ac.hanyang.selab.iot_application.presentation.adapter.UnregisteredDeviceListAdapter;
@@ -41,7 +38,7 @@ public class DeviceRegistrationController {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                DialogUtil.getInstance().stopProgress(activity);
+                DialogUtil.getInstance().stopProgress();
                 String response = msg.getData().getString("msg");
                 if(response != null) {
                     try {
@@ -84,7 +81,7 @@ public class DeviceRegistrationController {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                DialogUtil.getInstance().stopProgress(activity);
+                DialogUtil.getInstance().stopProgress();
 
                 String response = msg.getData().getString("msg");
                 DialogUtil.showMessage(activity, "Device Registration Result:", response);

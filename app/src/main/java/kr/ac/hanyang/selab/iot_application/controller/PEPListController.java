@@ -1,10 +1,8 @@
 package kr.ac.hanyang.selab.iot_application.controller;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -47,8 +45,7 @@ public class PEPListController {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 Log.d(TAG, msg.toString());
-                Bundle data = msg.getData();
-                String profile = data.getString("msg");
+                String profile = msg.getData().getString("msg");
                 if(profile != null) {
                     try {
                         JSONArray jsonPEPGrps = new JSONArray(profile);
@@ -69,7 +66,7 @@ public class PEPListController {
                 } else {
                     Log.e(TAG, "No Response");
                 }
-                DialogUtil.getInstance().stopProgress(activity);
+                DialogUtil.getInstance().stopProgress();
             }
         };
 
@@ -88,7 +85,7 @@ public class PEPListController {
         listAdapter.notifyDataSetChanged();
     }
 
-    public void onPEPSelected(final PEP pep) {
+    public void onPEPSelected(PEP pep) {
 
         // 선택한 PEP에 로그인
         Handler httpHandler = new Handler(){

@@ -46,19 +46,16 @@ public class BluetoothService {
         return blueAdapter.getBondedDevices();
     }
 
-    public void connect(BluetoothDevice device){
-        try{
-            blueSocket = device.createRfcommSocketToServiceRecord(uuid);
-            blueSocket.connect();
+    public void connect(BluetoothDevice device) throws IOException{
+        blueSocket = device.createRfcommSocketToServiceRecord(uuid);
+        blueSocket.connect();
 
-            out = blueSocket.getOutputStream();
-            in = blueSocket.getInputStream();
+        out = blueSocket.getOutputStream();
+        in = blueSocket.getInputStream();
 
-            beginListenForData();
-
-        } catch (IOException e){
-            Log.e(TAG, "connect()", e);
-        }
+        // TODO: 요 부분 Timeout 걸어야 함. 안걸면 PEP 아닌 기기에 대해서 하염없이 무한루프 돌아감
+        // TODO: 근데 어떻게 걸어야 할 지 모르겠음
+        beginListenForData();
     }
 
     public void closeAll(){
@@ -95,12 +92,14 @@ public class BluetoothService {
         workerThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while(!Thread.currentThread().isInterrupted()){
-                    try{
+                try{
+                    while(!Thread.currentThread().isInterrupted()){
                         int bytesAvailable = in.available();
                         if(bytesAvailable > 0){
                             byte[] packet = new byte[bytesAvailable];
+
                             in.read(packet);
+
                             for(int i=0; i<bytesAvailable; i++){
                                 byte b = packet[i];
                                 if(b == EOM) {
@@ -119,9 +118,9 @@ public class BluetoothService {
                                 }
                             }
                         }
-                    } catch (IOException e){
-                        Log.e(TAG, "Exception during beginListenForData()", e);
                     }
+                } catch (IOException e){
+                    Log.e(TAG, "Exception during beginListenForData()", e);
                 }
             }
         });

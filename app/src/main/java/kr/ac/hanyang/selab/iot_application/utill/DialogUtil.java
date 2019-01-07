@@ -9,15 +9,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.InputType;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.EditText;
-
-import kr.ac.hanyang.selab.iot_application.R;
 
 public class DialogUtil {
 
     private ProgressDialog progress = null;
+    private Activity tempActivity = null;
 
     // Make class Singleton.
     private DialogUtil(){}
@@ -29,7 +26,8 @@ public class DialogUtil {
     }
 
     public void startProgress(Activity activity){
-        activity.runOnUiThread(new Runnable() {
+        this.tempActivity = activity;
+        tempActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if(progress == null)
@@ -38,8 +36,9 @@ public class DialogUtil {
         });
     }
 
-    public void stopProgress(Activity activity){
-        activity.runOnUiThread(new Runnable() {
+    public void stopProgress(){
+        if(tempActivity == null) return;
+        tempActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if(progress != null) {

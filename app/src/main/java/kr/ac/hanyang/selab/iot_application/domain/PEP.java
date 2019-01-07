@@ -41,6 +41,8 @@ public class PEP implements Serializable {
         return pepId;
     }
 
+    public String getPEPName() {return pepName; }
+
     public String getIp() {
         return ip;
     }

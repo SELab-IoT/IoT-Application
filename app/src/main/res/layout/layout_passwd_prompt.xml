@@ -8,6 +8,12 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="해당 PEP의 PEP Group에 가입하기"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="PEP Group Password : "
         android:labelFor="@+id/prompt_pepgroup_pw"
         android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -16,6 +22,7 @@
         android:id="@+id/prompt_pepgroup_pw"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="Password for PEP Group"
         android:inputType="textPassword" >
         <requestFocus />
     </EditText>

@@ -82,7 +82,7 @@ public class ActionExecuteController {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                DialogUtil.getInstance().stopProgress(activity);
+                DialogUtil.getInstance().stopProgress();
 
                 Bundle data = msg.getData();
                 Log.d(TAG, data.toString());

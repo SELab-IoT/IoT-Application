@@ -13,6 +13,7 @@ import java.util.Map;
 import kr.ac.hanyang.selab.iot_application.R;
 import kr.ac.hanyang.selab.iot_application.controller.PEPRegistrationController;
 import kr.ac.hanyang.selab.iot_application.presentation.adapter.BluetoothPEPListAdapter;
+import kr.ac.hanyang.selab.iot_application.utill.DialogUtil;
 
 public class PEPRegistrationActivity extends AppCompatActivity{
 
@@ -53,6 +54,7 @@ public class PEPRegistrationActivity extends AppCompatActivity{
             @Override
             public void onClick(View view, int position) {
                 Map<String, String> pep = listAdapter.getBluetoothDevice(position);
+                DialogUtil.getInstance().startProgress(PEPRegistrationActivity.this);
                 con.connect(pep);
             }
         });

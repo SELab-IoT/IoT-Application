@@ -11,7 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import kr.ac.hanyang.selab.iot_application.domain.PEP;
 import kr.ac.hanyang.selab.iot_application.domain.PEPGroup;
 import kr.ac.hanyang.selab.iot_application.presentation.adapter.PEPGroupListAdapter;
 import kr.ac.hanyang.selab.iot_application.utill.DialogUtil;
@@ -57,7 +56,7 @@ public class PEPGroupListController {
                 } else {
                     Log.e(TAG, "No Response");
                 }
-                DialogUtil.getInstance().stopProgress(activity);
+                DialogUtil.getInstance().stopProgress();
             }
         };
 
