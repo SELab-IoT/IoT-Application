@@ -41,7 +41,6 @@ public class PEPRegistrationController {
 
     private Set<BluetoothDevice> pepList = new HashSet<>();
 
-    //여기 커플링 정말 싫다... 나중에 정말 시간 남으면 리팩토링 시도
     private Activity activity;
     private BluetoothPEPListAdapter listAdapter;
 

@@ -1,10 +1,6 @@
 package kr.ac.hanyang.selab.iot_application.utill.http;
 
 import android.content.ContentValues;
-import android.util.JsonReader;
-import android.util.Log;
-
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;

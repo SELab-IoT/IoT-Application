@@ -88,21 +88,15 @@ public class ActionExecuteController {
                 Log.d(TAG, data.toString());
                 try {
                     JSONObject json = new JSONObject(data.getString("msg"));
-                    //{"advices":[],"decision":true,"success":true}
-                    try {
-                        boolean decision = json.getBoolean("decision");
-                        boolean success = json.getBoolean("success");
-                        String resultMsg;
-                        resultMsg = "Policy Evaluation : "+ (decision ? "Permit" : "Deny(or NA/Ind)") + "\n";
-                        resultMsg += "Device Operate Success? : " + success;
-                        //resultMsg += advices
+                    //{"advices":[],"decision":true/false,"success":true/false}
+                    boolean decision = json.getBoolean("decision");
+                    boolean success = json.getBoolean("success");
+                    String resultMsg;
+                    resultMsg = "정책 평가 결과 : "+ (decision ? "Permit" : "Deny(혹은 NA/Ind)") + "\n";
+                    resultMsg += "디바이스 동작 여부 : " + success;
+                    //resultMsg += advices
 
-                        //TODO: 실행 결과 더 친절하게 알려주기(시간나면)
-                        DialogUtil.showMessage(activity, "PDP Evaluation Result:", resultMsg);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    DialogUtil.showMessage(activity, "PDP Evaluation Result:", resultMsg);
 
                 } catch (JSONException e) {
                     DialogUtil.showMessage(activity, "Error:", "Error Occurred during get result");

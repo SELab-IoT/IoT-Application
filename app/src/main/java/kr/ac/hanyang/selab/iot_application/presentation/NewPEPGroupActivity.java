@@ -1,7 +1,5 @@
 package kr.ac.hanyang.selab.iot_application.presentation;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,8 +11,6 @@ import org.json.JSONObject;
 
 import kr.ac.hanyang.selab.iot_application.R;
 import kr.ac.hanyang.selab.iot_application.controller.NewPEPGroupController;
-import kr.ac.hanyang.selab.iot_application.controller.PEPRegistrationController;
-import kr.ac.hanyang.selab.iot_application.domain.PEP;
 
 public class NewPEPGroupActivity extends AppCompatActivity {
 

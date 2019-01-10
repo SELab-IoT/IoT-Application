@@ -8,7 +8,7 @@ import java.net.URL;
 
 import kr.ac.hanyang.selab.iot_application.controller.Login;
 
-// 아마 userInfo 때문에 만들었던것 같은데 더 좋은 방법으로 리팩토링 할 수 있을 듯
+// 아마 userInfo 때문에 만들었던것 같은데 더 좋은 방법으로 리팩토링 할 수 있을 것 같다.
 public class HttpRequestFactory {
 
     private static final HttpRequestFactory instance = new HttpRequestFactory();

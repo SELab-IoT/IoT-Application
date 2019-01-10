@@ -8,7 +8,6 @@ import android.os.Message;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import kr.ac.hanyang.selab.iot_application.domain.PEP;
 import kr.ac.hanyang.selab.iot_application.utill.DialogUtil;
 import kr.ac.hanyang.selab.iot_application.utill.Hash;
 import kr.ac.hanyang.selab.iot_application.utill.http.HttpRequest;

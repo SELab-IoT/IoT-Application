@@ -1,6 +1,5 @@
 package kr.ac.hanyang.selab.iot_application.presentation;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;

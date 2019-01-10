@@ -4,7 +4,8 @@ public class Hash {
     final static String TAG = "Hash";
     public static String SHA3_256(String key) {
         String digest = SHA3.digestHex(256, key.getBytes());
-        // 만약 Java8로 옮긴다면 저 밑에 SHA3 클래스 지우고 요거 쓸 것.
+        // 만약 Java8로 옮긴다면 저 밑에 SHA3 클래스 지우고 아래 주석 코드를 쓸 것.
+        // Java7 MessageDigest에서는 SHA3-256을 지원하지 않는다.
         // byte[] digest = MessageDigest.getInstance("SHA3-256").digest(key.getBytes(charset));
         return digest;
     }
