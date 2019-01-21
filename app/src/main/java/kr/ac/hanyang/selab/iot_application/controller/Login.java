@@ -3,9 +3,7 @@ package kr.ac.hanyang.selab.iot_application.controller;
 import android.content.ContentValues;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

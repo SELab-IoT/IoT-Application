@@ -99,10 +99,9 @@ public class PEPGroupListController {
 
         String url = HttpUtil.PLATFORM_MANAGER + "groups";
 
-        String pepId = null;
+        JSONObject pepProfile = null;
         try {
-            JSONObject pepProfile = new JSONObject(activity.getIntent().getStringExtra("pepProfile"));
-            pepId = pepProfile.getString("pepId");
+            pepProfile = new JSONObject(activity.getIntent().getStringExtra("pepProfile"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -110,7 +109,7 @@ public class PEPGroupListController {
         ContentValues params = new ContentValues();
         params.put("userId", Login.getId());
         params.put("pepGroupId", pepGroup.getId());
-        params.put("pepId", pepId);
+        params.put("pepProfile", pepProfile.toString());
         HttpRequest request = HttpRequestFactory.getInstance().createPOSTRequest(handler, url, params);
         HttpRequester http = new HttpRequester(request);
         http.execute();
